@@ -23,7 +23,7 @@ public class AppUserDTO {
     private OffsetDateTime lastActive;
 
     @Size(max = 255)
-    private String passhash;
+    private String password;
 
     private Boolean enabled;
 
