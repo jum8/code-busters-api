@@ -28,6 +28,6 @@ public class JwtUserDetailsService implements UserDetailsService {
         final AppUser user = userRepository.findByEmail(username).orElseThrow(
                 () -> new UsernameNotFoundException("User " + username + " not found"));
         final List<SimpleGrantedAuthority> roles = Collections.singletonList(new SimpleGrantedAuthority(ROLE_USER));
-        return new JwtUserDetails(user.getId(), username, user.getPasshash(), roles);
+        return new JwtUserDetails(user.getId(), username, user.getPassword(), roles);
     }
 }

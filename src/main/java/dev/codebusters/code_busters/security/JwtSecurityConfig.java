@@ -39,7 +39,7 @@ public class JwtSecurityConfig {
         return http.cors(withDefaults())
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/", "/authenticate").permitAll()
+                        .requestMatchers("/", "/auth/**").permitAll()
                         .anyRequest().hasAuthority("ROLE_USER"))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)

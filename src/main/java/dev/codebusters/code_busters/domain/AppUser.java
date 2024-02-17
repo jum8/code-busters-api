@@ -39,8 +39,8 @@ public class AppUser {
     @Column
     private OffsetDateTime lastActive;
 
-    @Column
-    private String passhash;
+    @Column(name = "passhash")
+    private String password;
 
     @Column
     private Boolean enabled;

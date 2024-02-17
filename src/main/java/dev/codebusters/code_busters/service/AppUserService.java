@@ -5,14 +5,24 @@ import dev.codebusters.code_busters.domain.Country;
 import dev.codebusters.code_busters.domain.Submission;
 import dev.codebusters.code_busters.domain.UserType;
 import dev.codebusters.code_busters.model.AppUserDTO;
+import dev.codebusters.code_busters.model.auth.JwtUserDetails;
 import dev.codebusters.code_busters.repos.AppUserRepository;
 import dev.codebusters.code_busters.repos.CountryRepository;
 import dev.codebusters.code_busters.repos.SubmissionRepository;
 import dev.codebusters.code_busters.repos.UserTypeRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
+
+import java.util.Collections;
 import java.util.List;
+
+import dev.codebusters.code_busters.util.ResourceAlreadyExistsException;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -23,14 +33,16 @@ public class AppUserService {
     private final CountryRepository countryRepository;
     private final UserTypeRepository userTypeRepository;
     private final SubmissionRepository submissionRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public AppUserService(final AppUserRepository appUserRepository,
-            final CountryRepository countryRepository, final UserTypeRepository userTypeRepository,
-            final SubmissionRepository submissionRepository) {
+                          final CountryRepository countryRepository, final UserTypeRepository userTypeRepository,
+                          final SubmissionRepository submissionRepository, PasswordEncoder passwordEncoder) {
         this.appUserRepository = appUserRepository;
         this.countryRepository = countryRepository;
         this.userTypeRepository = userTypeRepository;
         this.submissionRepository = submissionRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<AppUserDTO> findAll() {
@@ -47,8 +59,14 @@ public class AppUserService {
     }
 
     public Long create(final AppUserDTO appUserDTO) {
+        String email = appUserDTO.getEmail();
+        if (appUserRepository.existsByEmail(email)) {
+            throw new ResourceAlreadyExistsException("Email " + email + " is already registered");
+        }
         final AppUser appUser = new AppUser();
         mapToEntity(appUserDTO, appUser);
+        appUser.setPassword(passwordEncoder.encode(appUserDTO.getPassword()));
+        appUser.setEnabled(false);
         return appUserRepository.save(appUser).getId();
     }
 
@@ -63,13 +81,15 @@ public class AppUserService {
         appUserRepository.deleteById(id);
     }
 
+
+
     private AppUserDTO mapToDTO(final AppUser appUser, final AppUserDTO appUserDTO) {
         appUserDTO.setId(appUser.getId());
         appUserDTO.setEmail(appUser.getEmail());
         appUserDTO.setName(appUser.getName());
         appUserDTO.setAdded(appUser.getAdded());
         appUserDTO.setLastActive(appUser.getLastActive());
-        appUserDTO.setPasshash(appUser.getPasshash());
+        appUserDTO.setPassword(appUser.getPassword());
         appUserDTO.setEnabled(appUser.getEnabled());
         appUserDTO.setCountry(appUser.getCountry() == null ? null : appUser.getCountry().getId());
         appUserDTO.setUserType(appUser.getUserType() == null ? null : appUser.getUserType().getId());
@@ -81,7 +101,7 @@ public class AppUserService {
         appUser.setName(appUserDTO.getName());
         appUser.setAdded(appUserDTO.getAdded());
         appUser.setLastActive(appUserDTO.getLastActive());
-        appUser.setPasshash(appUserDTO.getPasshash());
+        appUser.setPassword(appUserDTO.getPassword());
         appUser.setEnabled(appUserDTO.getEnabled());
         final Country country = appUserDTO.getCountry() == null ? null : countryRepository.findById(appUserDTO.getCountry())
                 .orElseThrow(() -> new NotFoundException("country not found"));
