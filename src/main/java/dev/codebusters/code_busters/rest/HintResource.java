@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping(value = "/api/hints", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/hints", produces = MediaType.APPLICATION_JSON_VALUE)
 public class HintResource {
 
     private final HintService hintService;

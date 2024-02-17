@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping(value = "/api/challenges", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/challenges", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ChallengeResource {
 
     private final ChallengeService challengeService;

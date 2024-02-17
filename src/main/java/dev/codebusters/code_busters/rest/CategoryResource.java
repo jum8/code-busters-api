@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping(value = "/api/categories", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryResource {
 
     private final CategoryService categoryService;
