@@ -30,7 +30,7 @@ public class Category {
     @Column
     private String title;
 
-    @Column(name = "\"description\"")
+    @Column(name = "description")
     private String description;
 
     @Column

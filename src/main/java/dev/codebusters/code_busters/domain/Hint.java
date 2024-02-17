@@ -24,10 +24,10 @@ public class Hint {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "\"visible\"")
+    @Column(name = "visible")
     private Boolean visible;
 
-    @Column(name = "\"description\"")
+    @Column(name = "description")
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)

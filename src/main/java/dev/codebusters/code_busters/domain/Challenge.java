@@ -33,7 +33,7 @@ public class Challenge {
     @Column
     private String title;
 
-    @Column(name = "\"description\"", columnDefinition = "longtext")
+    @Column(name = "description", columnDefinition = "longtext")
     private String description;
 
     @Column

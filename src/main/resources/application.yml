@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/code-busters?serverTimezone=UTC}
+    url: ${JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/code-busters-db?serverTimezone=UTC}
     username: ${JDBC_DATABASE_USERNAME:root}
-    password: ${JDBC_DATABASE_PASSWORD:<<YOUR_PASSWORD>>}
+    password: ${JDBC_DATABASE_PASSWORD:root}
     dbcp2:
       max-wait-millis: 30000
       validation-query: /* ping */ select 1
