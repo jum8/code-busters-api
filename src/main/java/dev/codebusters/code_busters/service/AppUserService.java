@@ -5,25 +5,18 @@ import dev.codebusters.code_busters.domain.Country;
 import dev.codebusters.code_busters.domain.Submission;
 import dev.codebusters.code_busters.domain.UserType;
 import dev.codebusters.code_busters.model.AppUserDTO;
-import dev.codebusters.code_busters.model.auth.JwtUserDetails;
 import dev.codebusters.code_busters.repos.AppUserRepository;
 import dev.codebusters.code_busters.repos.CountryRepository;
 import dev.codebusters.code_busters.repos.SubmissionRepository;
 import dev.codebusters.code_busters.repos.UserTypeRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
-
-import java.util.Collections;
-import java.util.List;
-
 import dev.codebusters.code_busters.util.ResourceAlreadyExistsException;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -63,6 +56,8 @@ public class AppUserService {
         if (appUserRepository.existsByEmail(email)) {
             throw new ResourceAlreadyExistsException("Email " + email + " is already registered");
         }
+        if(appUserDTO.getUserType() == null) appUserDTO.setUserType(1L);
+
         final AppUser appUser = new AppUser();
         mapToEntity(appUserDTO, appUser);
         appUser.setPassword(passwordEncoder.encode(appUserDTO.getPassword()));

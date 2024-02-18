@@ -52,7 +52,7 @@ public class AppUser {
     @JoinColumn(name = "country_id")
     private Country country;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_type_id")
     private UserType userType;
 
