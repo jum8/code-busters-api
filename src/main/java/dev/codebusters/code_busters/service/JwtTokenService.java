@@ -29,7 +29,7 @@ public class JwtTokenService {
         final Instant now = Instant.now();
         return JWT.create()
                 .withSubject(userDetails.getUsername())
-                .withIssuer("app")
+                .withIssuer("code-busters")
                 .withIssuedAt(now)
                 .withExpiresAt(now.plusMillis(JWT_TOKEN_VALIDITY.toMillis()))
                 .sign(this.hmac512);
