@@ -42,7 +42,7 @@ public class JwtSecurityConfig {
         return http.cors(withDefaults())
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/", "/auth/**", "/swagger-ui/**", "v3/api-docs**").permitAll()
+                        .requestMatchers("/", "/auth/**", "/swagger-ui/**", "v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
