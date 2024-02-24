@@ -31,13 +31,13 @@ public class AppUserResource {
         this.appUserService = appUserService;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<AppUserDTO>> getAllAppUsers() {
         return ResponseEntity.ok(appUserService.findAll());
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<AppUserDTO> getAppUser(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(appUserService.get(id));
@@ -50,7 +50,7 @@ public class AppUserResource {
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateAppUser(@PathVariable(name = "id") final Long id,
             @RequestBody @Valid final AppUserDTO appUserDTO) {
@@ -58,7 +58,7 @@ public class AppUserResource {
         return ResponseEntity.ok(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
     public ResponseEntity<Void> deleteAppUser(@PathVariable(name = "id") final Long id) {

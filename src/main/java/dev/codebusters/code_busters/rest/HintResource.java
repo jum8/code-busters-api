@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,16 +29,19 @@ public class HintResource {
         this.hintService = hintService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<HintDTO>> getAllHints() {
         return ResponseEntity.ok(hintService.findAll());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<HintDTO> getHint(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(hintService.get(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createHint(@RequestBody @Valid final HintDTO hintDTO) {
@@ -45,6 +49,7 @@ public class HintResource {
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateHint(@PathVariable(name = "id") final Long id,
             @RequestBody @Valid final HintDTO hintDTO) {
@@ -52,6 +57,7 @@ public class HintResource {
         return ResponseEntity.ok(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
     public ResponseEntity<Void> deleteHint(@PathVariable(name = "id") final Long id) {
