@@ -1,23 +1,19 @@
 package dev.codebusters.code_busters.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.OffsetDateTime;
 import java.util.Set;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
 @Entity
 @Table(name = "Users")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 public class AppUser {
@@ -27,13 +23,14 @@ public class AppUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column
     private String name;
 
-    @Column
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
     private OffsetDateTime added;
 
     @Column
@@ -56,4 +53,7 @@ public class AppUser {
     @JoinColumn(name = "user_type_id")
     private UserType userType;
 
+    public AppUser() {
+        this.enabled = true;
+    }
 }
