@@ -3,6 +3,7 @@ package dev.codebusters.code_busters.rest;
 import dev.codebusters.code_busters.model.AppUserDTO;
 import dev.codebusters.code_busters.model.auth.AuthenticationRequest;
 import dev.codebusters.code_busters.model.auth.AuthenticationResponse;
+import dev.codebusters.code_busters.model.auth.UserRegistrationRequest;
 import dev.codebusters.code_busters.service.AppUserService;
 import dev.codebusters.code_busters.service.JwtTokenService;
 import dev.codebusters.code_busters.service.JwtUserDetailsService;
@@ -37,8 +38,8 @@ public class AuthenticationResource {
 
     @PostMapping("/register")
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createAppUser(@RequestBody @Valid final AppUserDTO appUserDTO) {
-        final Long createdId = appUserService.create(appUserDTO);
+    public ResponseEntity<Long> createAppUser(@RequestBody @Valid final UserRegistrationRequest userRegistrationRequest) {
+        final Long createdId = appUserService.create(userRegistrationRequest);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 

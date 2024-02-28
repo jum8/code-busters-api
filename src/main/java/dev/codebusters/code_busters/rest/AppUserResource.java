@@ -43,12 +43,6 @@ public class AppUserResource {
         return ResponseEntity.ok(appUserService.get(id));
     }
 
-    @PostMapping
-    @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createAppUser(@RequestBody @Valid final AppUserDTO appUserDTO) {
-        final Long createdId = appUserService.create(appUserDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
-    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PutMapping("/{id}")

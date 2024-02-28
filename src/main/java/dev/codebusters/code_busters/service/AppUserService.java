@@ -5,6 +5,7 @@ import dev.codebusters.code_busters.domain.Country;
 import dev.codebusters.code_busters.domain.Submission;
 import dev.codebusters.code_busters.domain.UserType;
 import dev.codebusters.code_busters.model.AppUserDTO;
+import dev.codebusters.code_busters.model.auth.UserRegistrationRequest;
 import dev.codebusters.code_busters.repos.AppUserRepository;
 import dev.codebusters.code_busters.repos.CountryRepository;
 import dev.codebusters.code_busters.repos.SubmissionRepository;
@@ -51,17 +52,15 @@ public class AppUserService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    public Long create(final AppUserDTO appUserDTO) {
-        String email = appUserDTO.getEmail();
+    public Long create(final UserRegistrationRequest userRegistrationRequest) {
+        String email = userRegistrationRequest.getEmail();
         if (appUserRepository.existsByEmail(email)) {
             throw new ResourceAlreadyExistsException("Email " + email + " is already registered");
         }
-        if(appUserDTO.getUserType() == null) appUserDTO.setUserType(1L);
 
         final AppUser appUser = new AppUser();
-        mapToEntity(appUserDTO, appUser);
-        appUser.setPassword(passwordEncoder.encode(appUserDTO.getPassword()));
-        appUser.setEnabled(false);
+        mapUserRegistrationRequestToEntity(userRegistrationRequest, appUser);
+        appUser.setPassword(passwordEncoder.encode(userRegistrationRequest.getPassword()));
         return appUserRepository.save(appUser).getId();
     }
 
@@ -104,6 +103,16 @@ public class AppUserService {
         final UserType userType = appUserDTO.getUserType() == null ? null : userTypeRepository.findById(appUserDTO.getUserType())
                 .orElseThrow(() -> new NotFoundException("userType not found"));
         appUser.setUserType(userType);
+        return appUser;
+    }
+
+    private AppUser mapUserRegistrationRequestToEntity(final UserRegistrationRequest userRegistrationRequest, final AppUser appUser) {
+        appUser.setEmail(userRegistrationRequest.getEmail());
+        appUser.setName(userRegistrationRequest.getName());
+        appUser.setPassword(userRegistrationRequest.getPassword());
+        final UserType userType = userTypeRepository.findById(1L)
+                .orElseThrow(() -> new NotFoundException("userType not found"));
+        appUser.setUserType(userType); // TODO? ver si cambiar el userType a Enum
         return appUser;
     }
 
