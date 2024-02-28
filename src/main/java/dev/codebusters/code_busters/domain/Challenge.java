@@ -1,23 +1,19 @@
 package dev.codebusters.code_busters.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import dev.codebusters.code_busters.model.ChallengeLevel;
+import jakarta.persistence.*;
+
 import java.time.OffsetDateTime;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
 @Entity
 @Table(name = "Challenges")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 public class Challenge {
@@ -27,23 +23,31 @@ public class Challenge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
     private OffsetDateTime added;
 
-    @Column
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "description", columnDefinition = "longtext")
+    @Column(nullable = false, columnDefinition = "longtext")
     private String description;
 
-    @Column
+    @Column(nullable = false)
     private Boolean exposed;
 
-    @Column
+    @Column(nullable = false)
     private String flag;
 
-    @Column
+    @Column(nullable = false)
     private Integer points;
+
+    @Column(nullable = false)
+    private Long credits;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ChallengeLevel level;
 
     @OneToMany(mappedBy = "challenge")
     private Set<Submission> challengeSubmissions;

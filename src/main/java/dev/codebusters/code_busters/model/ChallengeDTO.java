@@ -1,5 +1,6 @@
 package dev.codebusters.code_busters.model;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
 import lombok.Getter;
@@ -14,17 +15,28 @@ public class ChallengeDTO {
 
     private OffsetDateTime added;
 
+    @NotNull
     @Size(max = 255)
     private String title;
 
+    @NotNull
     private String description;
 
+    @NotNull
     private Boolean exposed;
 
+    @NotNull
     @Size(max = 255)
     private String flag;
 
+    @NotNull
     private Integer points;
+
+    @NotNull
+    private Long credits;
+
+    @NotNull
+    private ChallengeLevel level;
 
     private Long category;
 

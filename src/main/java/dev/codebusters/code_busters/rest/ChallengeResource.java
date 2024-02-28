@@ -1,6 +1,7 @@
 package dev.codebusters.code_busters.rest;
 
 import dev.codebusters.code_busters.model.ChallengeDTO;
+import dev.codebusters.code_busters.model.ChallengeSummaryDTO;
 import dev.codebusters.code_busters.service.ChallengeService;
 import dev.codebusters.code_busters.util.ReferencedException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
@@ -33,7 +34,7 @@ public class ChallengeResource {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<ChallengeDTO>> getAllChallenges() {
+    public ResponseEntity<List<ChallengeSummaryDTO>> getAllChallenges() {
         return ResponseEntity.ok(challengeService.findAll());
     }
 

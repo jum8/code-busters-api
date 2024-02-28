@@ -5,6 +5,7 @@ import dev.codebusters.code_busters.domain.Challenge;
 import dev.codebusters.code_busters.domain.Hint;
 import dev.codebusters.code_busters.domain.Submission;
 import dev.codebusters.code_busters.model.ChallengeDTO;
+import dev.codebusters.code_busters.model.ChallengeSummaryDTO;
 import dev.codebusters.code_busters.repos.CategoryRepository;
 import dev.codebusters.code_busters.repos.ChallengeRepository;
 import dev.codebusters.code_busters.repos.HintRepository;
@@ -14,6 +15,7 @@ import dev.codebusters.code_busters.util.ReferencedWarning;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -33,10 +35,11 @@ public class ChallengeService {
         this.hintRepository = hintRepository;
     }
 
-    public List<ChallengeDTO> findAll() {
+    @Transactional
+    public List<ChallengeSummaryDTO> findAll() {
         final List<Challenge> challenges = challengeRepository.findAll(Sort.by("id"));
         return challenges.stream()
-                .map(challenge -> mapToDTO(challenge, new ChallengeDTO()))
+                .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
                 .toList();
     }
 
@@ -71,8 +74,21 @@ public class ChallengeService {
         challengeDTO.setExposed(challenge.getExposed());
         challengeDTO.setFlag(challenge.getFlag());
         challengeDTO.setPoints(challenge.getPoints());
+        challengeDTO.setCredits(challenge.getCredits());
+        challengeDTO.setLevel(challenge.getLevel());
         challengeDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getId());
         return challengeDTO;
+    }
+
+    private ChallengeSummaryDTO mapToSummaryDTO(final Challenge challenge, final ChallengeSummaryDTO challengeSummaryDTO) {
+        challengeSummaryDTO.setId(challenge.getId());
+        challengeSummaryDTO.setTitle(challenge.getTitle());
+        challengeSummaryDTO.setExposed(challenge.getExposed());
+        challengeSummaryDTO.setPoints(challenge.getPoints());
+        challengeSummaryDTO.setCredits(challenge.getCredits());
+        challengeSummaryDTO.setLevel(challenge.getLevel());
+        challengeSummaryDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getTitle());
+        return challengeSummaryDTO;
     }
 
     private Challenge mapToEntity(final ChallengeDTO challengeDTO, final Challenge challenge) {
@@ -82,6 +98,8 @@ public class ChallengeService {
         challenge.setExposed(challengeDTO.getExposed());
         challenge.setFlag(challengeDTO.getFlag());
         challenge.setPoints(challengeDTO.getPoints());
+        challenge.setCredits(challengeDTO.getCredits());
+        challenge.setLevel(challengeDTO.getLevel());
         final Category category = challengeDTO.getCategory() == null ? null : categoryRepository.findById(challengeDTO.getCategory())
                 .orElseThrow(() -> new NotFoundException("category not found"));
         challenge.setCategory(category);
