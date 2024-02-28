@@ -5,14 +5,21 @@ import dev.codebusters.code_busters.domain.Challenge;
 import dev.codebusters.code_busters.domain.Hint;
 import dev.codebusters.code_busters.domain.Submission;
 import dev.codebusters.code_busters.model.ChallengeDTO;
+import dev.codebusters.code_busters.model.ChallengeManipulationDTO;
 import dev.codebusters.code_busters.model.ChallengeSummaryDTO;
+import dev.codebusters.code_busters.model.HintManipulationDTO;
 import dev.codebusters.code_busters.repos.CategoryRepository;
 import dev.codebusters.code_busters.repos.ChallengeRepository;
 import dev.codebusters.code_busters.repos.HintRepository;
 import dev.codebusters.code_busters.repos.SubmissionRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,9 +56,11 @@ public class ChallengeService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    public Long create(final ChallengeDTO challengeDTO) {
+    @Transactional
+    public Long create(final ChallengeManipulationDTO challengeManipulationDTO) {
         final Challenge challenge = new Challenge();
-        mapToEntity(challengeDTO, challenge);
+
+        mapChallegeManipulatioDTOToEntity(challengeManipulationDTO, challenge);
         return challengeRepository.save(challenge).getId();
     }
 
@@ -104,6 +113,31 @@ public class ChallengeService {
                 .orElseThrow(() -> new NotFoundException("category not found"));
         challenge.setCategory(category);
         return challenge;
+    }
+
+    private Challenge mapChallegeManipulatioDTOToEntity(final ChallengeManipulationDTO challengeManipulationDTO, final Challenge challenge) {
+        challenge.setTitle(challengeManipulationDTO.getTitle());
+        challenge.setDescription(challengeManipulationDTO.getDescription());
+        challenge.setExposed(challengeManipulationDTO.getExposed());
+        challenge.setFlag(challengeManipulationDTO.getFlag());
+        challenge.setPoints(challengeManipulationDTO.getPoints());
+        challenge.setCredits(challengeManipulationDTO.getCredits());
+        challenge.setLevel(challengeManipulationDTO.getLevel());
+        final Category category = challengeManipulationDTO.getCategory() == null ? null : categoryRepository.findById(challengeManipulationDTO.getCategory())
+                .orElseThrow(() -> new NotFoundException("category not found"));
+        challenge.setCategory(category);
+        final Set<Hint> hints = challengeManipulationDTO.getHints().stream()
+                .map(hintManipulationDTO -> mapHintToEntity(hintManipulationDTO, new Hint()))
+                .collect(Collectors.toSet());
+        challenge.setHints(hints);
+        hints.forEach(hint -> hint.setChallenge(challenge));
+        return challenge;
+    }
+
+    private Hint mapHintToEntity(final HintManipulationDTO hintManipulationDTO, final Hint hint) {
+        hint.setVisible(hintManipulationDTO.getVisible());
+        hint.setDescription(hintManipulationDTO.getDescription());
+        return hint;
     }
 
     public ReferencedWarning getReferencedWarning(final Long id) {
