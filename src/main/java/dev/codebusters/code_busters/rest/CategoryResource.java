@@ -1,5 +1,6 @@
 package dev.codebusters.code_busters.rest;
 
+import dev.codebusters.code_busters.model.CategoryManipulationDTO;
 import dev.codebusters.code_busters.model.CategoryDTO;
 import dev.codebusters.code_busters.service.CategoryService;
 import dev.codebusters.code_busters.util.ReferencedException;
@@ -31,7 +32,6 @@ public class CategoryResource {
         this.categoryService = categoryService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         return ResponseEntity.ok(categoryService.findAll());
@@ -46,16 +46,16 @@ public class CategoryResource {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createCategory(@RequestBody @Valid final CategoryDTO categoryDTO) {
-        final Long createdId = categoryService.create(categoryDTO);
+    public ResponseEntity<Long> createCategory(@RequestBody @Valid final CategoryManipulationDTO categoryManipulationDTO) {
+        final Long createdId = categoryService.create(categoryManipulationDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateCategory(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final CategoryDTO categoryDTO) {
-        categoryService.update(id, categoryDTO);
+            @RequestBody @Valid final CategoryManipulationDTO categoryManipulationDTO) {
+        categoryService.update(id, categoryManipulationDTO);
         return ResponseEntity.ok(id);
     }
 

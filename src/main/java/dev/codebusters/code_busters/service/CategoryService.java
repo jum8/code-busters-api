@@ -2,6 +2,7 @@ package dev.codebusters.code_busters.service;
 
 import dev.codebusters.code_busters.domain.Category;
 import dev.codebusters.code_busters.domain.Challenge;
+import dev.codebusters.code_busters.model.CategoryManipulationDTO;
 import dev.codebusters.code_busters.model.CategoryDTO;
 import dev.codebusters.code_busters.repos.CategoryRepository;
 import dev.codebusters.code_busters.repos.ChallengeRepository;
@@ -37,16 +38,16 @@ public class CategoryService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    public Long create(final CategoryDTO categoryDTO) {
+    public Long create(final CategoryManipulationDTO categoryManipulationDTO) {
         final Category category = new Category();
-        mapToEntity(categoryDTO, category);
+        mapToEntity(categoryManipulationDTO, category);
         return categoryRepository.save(category).getId();
     }
 
-    public void update(final Long id, final CategoryDTO categoryDTO) {
+    public void update(final Long id, final CategoryManipulationDTO categoryManipulationDTO) {
         final Category category = categoryRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
-        mapToEntity(categoryDTO, category);
+        mapToEntity(categoryManipulationDTO, category);
         categoryRepository.save(category);
     }
 
@@ -63,11 +64,10 @@ public class CategoryService {
         return categoryDTO;
     }
 
-    private Category mapToEntity(final CategoryDTO categoryDTO, final Category category) {
-        category.setAdded(categoryDTO.getAdded());
-        category.setTitle(categoryDTO.getTitle());
-        category.setDescription(categoryDTO.getDescription());
-        category.setExposed(categoryDTO.getExposed());
+    private Category mapToEntity(final CategoryManipulationDTO categoryManipulationDTO, final Category category) {
+        category.setTitle(categoryManipulationDTO.getTitle());
+        category.setDescription(categoryManipulationDTO.getDescription());
+        category.setExposed(categoryManipulationDTO.getExposed());
         return category;
     }
 

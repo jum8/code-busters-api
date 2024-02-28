@@ -26,13 +26,13 @@ public class Category {
     @Column(nullable = false, updatable = false)
     private OffsetDateTime added;
 
-    @Column
+    @Column(nullable = false)
     private String title;
 
     @Column(name = "description")
     private String description;
 
-    @Column
+    @Column(nullable = false)
     private Boolean exposed;
 
     @OneToMany(mappedBy = "category")
