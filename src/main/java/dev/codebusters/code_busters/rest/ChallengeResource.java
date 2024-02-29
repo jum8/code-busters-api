@@ -1,6 +1,7 @@
 package dev.codebusters.code_busters.rest;
 
 import dev.codebusters.code_busters.model.ChallengeDTO;
+import dev.codebusters.code_busters.model.ChallengeManipulationDTO;
 import dev.codebusters.code_busters.model.ChallengeSummaryDTO;
 import dev.codebusters.code_busters.service.ChallengeService;
 import dev.codebusters.code_busters.util.ReferencedException;
@@ -48,8 +49,8 @@ public class ChallengeResource {
     @PostMapping
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createChallenge(
-            @RequestBody @Valid final ChallengeDTO challengeDTO) {
-        final Long createdId = challengeService.create(challengeDTO);
+            @RequestBody @Valid final ChallengeManipulationDTO challengeManipulationDTO) {
+        final Long createdId = challengeService.create(challengeManipulationDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 

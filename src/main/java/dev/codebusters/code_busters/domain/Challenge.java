@@ -56,4 +56,7 @@ public class Challenge {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL)
+    private Set<Hint> hints;
+
 }
