@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
@@ -23,29 +24,40 @@ public class CodeBustersApplication {
     CommandLineRunner run(AppUserRepository userRepository, UserTypeRepository userTypeRepository, PasswordEncoder passwordEncoder) {
         return args -> {  // inserting data after application is up
 
-            UserType userTypeUser = new UserType();
-            userTypeUser.setTitle("USER");
-            userTypeUser = userTypeRepository.save(userTypeUser);
+            UserType userTypeUser = userTypeRepository.findById(1L).orElseGet(() -> {
+                UserType newUserType = new UserType();
+                newUserType.setTitle("USER");
+                newUserType = userTypeRepository.save(newUserType);
+                return newUserType;
+            });
 
-            AppUser commonUser = new AppUser();
-            commonUser.setName("Ned Flanders");
-            commonUser.setEmail("nedf@mail.com");
-            commonUser.setPassword(passwordEncoder.encode("password"));
-            commonUser.setEnabled(true);
-            commonUser.setUserType(userTypeUser);
-            userRepository.save(commonUser);
 
-            UserType userTypeAdmin = new UserType();
-            userTypeAdmin.setTitle("ADMIN");
-            userTypeAdmin = userTypeRepository.save(userTypeAdmin);
+            String commonUserEmail = "ned@mail.com";
+            if (!userRepository.existsByEmail(commonUserEmail)) {
+                AppUser commonUser = new AppUser();
+                commonUser.setName("Ned Flanders");
+                commonUser.setEmail(commonUserEmail);
+                commonUser.setPassword(passwordEncoder.encode("password"));
+                commonUser.setUserType(userTypeUser);
+                userRepository.save(commonUser);
+            }
 
-            AppUser adminUser = new AppUser();
-            adminUser.setName("Bruce Allmighty");
-            adminUser.setEmail("ba@mail.com");
-            adminUser.setPassword(passwordEncoder.encode("password"));
-            adminUser.setEnabled(true);
-            adminUser.setUserType(userTypeAdmin);
-            userRepository.save(adminUser);
+            UserType userTypeAdmin = userTypeRepository.findById(2L).orElseGet(() -> {
+                UserType newUserType = new UserType();
+                newUserType.setTitle("ADMIN");
+                newUserType = userTypeRepository.save(newUserType);
+                return newUserType;
+            });
+
+            String adminUserEmail = "ba@mail.com";
+            if (!userRepository.existsByEmail(adminUserEmail)) {
+                AppUser adminUser = new AppUser();
+                adminUser.setName("Bruce Allmighty");
+                adminUser.setEmail(adminUserEmail);
+                adminUser.setPassword(passwordEncoder.encode("password"));
+                adminUser.setUserType(userTypeAdmin);
+                userRepository.save(adminUser);
+            }
 
         };
     }
