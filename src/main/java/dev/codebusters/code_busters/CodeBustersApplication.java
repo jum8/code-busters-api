@@ -4,12 +4,10 @@ import dev.codebusters.code_busters.domain.AppUser;
 import dev.codebusters.code_busters.domain.UserType;
 import dev.codebusters.code_busters.repos.AppUserRepository;
 import dev.codebusters.code_busters.repos.UserTypeRepository;
-import dev.codebusters.code_busters.service.AppUserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
