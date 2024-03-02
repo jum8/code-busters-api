@@ -32,6 +32,13 @@ public class CategoryService {
                 .toList();
     }
 
+    public List<CategoryDTO> findExposedCategories() {
+        final List<Category> categories = categoryRepository.findByExposedTrue();
+        return categories.stream()
+                .map(category -> mapToDTO(category, new CategoryDTO()))
+                .toList();
+    }
+
     public CategoryDTO get(final Long id) {
         return categoryRepository.findById(id)
                 .map(category -> mapToDTO(category, new CategoryDTO()))
