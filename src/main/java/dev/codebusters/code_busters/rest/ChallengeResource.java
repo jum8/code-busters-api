@@ -1,11 +1,11 @@
 package dev.codebusters.code_busters.rest;
 
-import dev.codebusters.code_busters.model.ChallengeDTO;
-import dev.codebusters.code_busters.model.ChallengeManipulationDTO;
-import dev.codebusters.code_busters.model.ChallengeSummaryDTO;
+import dev.codebusters.code_busters.model.*;
 import dev.codebusters.code_busters.service.ChallengeService;
 import dev.codebusters.code_busters.util.ReferencedException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -13,14 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -37,6 +30,15 @@ public class ChallengeResource {
     @GetMapping
     public ResponseEntity<List<ChallengeSummaryDTO>> getAllChallenges() {
         return ResponseEntity.ok(challengeService.findAll());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ChallengeSummaryDTO>> searchChallenges(
+            @RequestParam(name = "categoryId", required = false) Long categoryId,
+            @RequestParam(name = "level", required = false) ChallengeLevel level,
+            @RequestParam(name = "subscription", required = false) @Parameter(schema = @Schema(allowableValues = {"FREE", "PAID"})) String subscription) {
+        List<ChallengeSummaryDTO> challenges = challengeService.searchChallenges(categoryId, level, subscription);
+        return ResponseEntity.ok(challenges);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

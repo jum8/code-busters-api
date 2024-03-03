@@ -14,7 +14,7 @@ public class ChallengeSummaryDTO {
 
     private Boolean exposed;
 
-    private Integer points;
+    private Long points;
 
     private Long credits;
 
