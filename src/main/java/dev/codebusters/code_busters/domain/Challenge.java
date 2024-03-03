@@ -40,7 +40,7 @@ public class Challenge {
     private String flag;
 
     @Column(nullable = false)
-    private Integer points;
+    private Long points;
 
     @Column(nullable = false)
     private Long credits;

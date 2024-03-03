@@ -30,7 +30,7 @@ public class ChallengeDTO {
     private String flag;
 
     @NotNull
-    private Integer points;
+    private Long points;
 
     @NotNull
     private Long credits;

@@ -4,10 +4,7 @@ import dev.codebusters.code_busters.domain.Category;
 import dev.codebusters.code_busters.domain.Challenge;
 import dev.codebusters.code_busters.domain.Hint;
 import dev.codebusters.code_busters.domain.Submission;
-import dev.codebusters.code_busters.model.ChallengeDTO;
-import dev.codebusters.code_busters.model.ChallengeManipulationDTO;
-import dev.codebusters.code_busters.model.ChallengeSummaryDTO;
-import dev.codebusters.code_busters.model.HintManipulationDTO;
+import dev.codebusters.code_busters.model.*;
 import dev.codebusters.code_busters.repos.CategoryRepository;
 import dev.codebusters.code_busters.repos.ChallengeRepository;
 import dev.codebusters.code_busters.repos.HintRepository;
@@ -15,7 +12,7 @@ import dev.codebusters.code_busters.repos.SubmissionRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,6 +42,14 @@ public class ChallengeService {
     @Transactional
     public List<ChallengeSummaryDTO> findAll() {
         final List<Challenge> challenges = challengeRepository.findAll(Sort.by("id"));
+        return challenges.stream()
+                .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
+                .toList();
+    }
+
+    @Transactional
+    public List<ChallengeSummaryDTO> searchChallenges(Long categoryId, ChallengeLevel level, String subscription) {
+        final List<Challenge> challenges = challengeRepository.searchChallenges(categoryId, level, subscription);
         return challenges.stream()
                 .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
                 .toList();
