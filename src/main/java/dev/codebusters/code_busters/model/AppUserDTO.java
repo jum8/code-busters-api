@@ -29,6 +29,8 @@ public class AppUserDTO {
 
     private Long country;
 
+    private Long city;
+
     private Long userType;
 
 }
