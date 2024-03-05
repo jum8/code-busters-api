@@ -69,10 +69,10 @@ public class ChallengeService {
         return challengeRepository.save(challenge).getId();
     }
 
-    public void update(final Long id, final ChallengeDTO challengeDTO) {
+    public void update(final Long id, final ChallengeManipulationDTO challengeManipulationDTO) {
         final Challenge challenge = challengeRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
-        mapToEntity(challengeDTO, challenge);
+        mapChallegeManipulatioDTOToEntity(challengeManipulationDTO, challenge);
         challengeRepository.save(challenge);
     }
 

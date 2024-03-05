@@ -59,8 +59,8 @@ public class ChallengeResource {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateChallenge(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final ChallengeDTO challengeDTO) {
-        challengeService.update(id, challengeDTO);
+            @RequestBody @Valid final ChallengeManipulationDTO challengeManipulationDTO) {
+        challengeService.update(id, challengeManipulationDTO);
         return ResponseEntity.ok(id);
     }
 
