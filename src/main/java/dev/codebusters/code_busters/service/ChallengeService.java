@@ -90,6 +90,8 @@ public class ChallengeService {
         challengeDTO.setPoints(challenge.getPoints());
         challengeDTO.setCredits(challenge.getCredits());
         challengeDTO.setLevel(challenge.getLevel());
+        challengeDTO.setImageUrl(challenge.getImageUrl());
+        challengeDTO.setPremium(challenge.getPremium());
         challengeDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getId());
         return challengeDTO;
     }
@@ -101,6 +103,8 @@ public class ChallengeService {
         challengeSummaryDTO.setPoints(challenge.getPoints());
         challengeSummaryDTO.setCredits(challenge.getCredits());
         challengeSummaryDTO.setLevel(challenge.getLevel());
+        challengeSummaryDTO.setImageUrl(challenge.getImageUrl());
+        challengeSummaryDTO.setPremium(challenge.getPremium());
         challengeSummaryDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getTitle());
         return challengeSummaryDTO;
     }
@@ -114,6 +118,8 @@ public class ChallengeService {
         challenge.setPoints(challengeDTO.getPoints());
         challenge.setCredits(challengeDTO.getCredits());
         challenge.setLevel(challengeDTO.getLevel());
+        challenge.setImageUrl(challengeDTO.getImageUrl());
+        challenge.setPremium(challengeDTO.getPremium());
         final Category category = challengeDTO.getCategory() == null ? null : categoryRepository.findById(challengeDTO.getCategory())
                 .orElseThrow(() -> new NotFoundException("category not found"));
         challenge.setCategory(category);
@@ -128,6 +134,8 @@ public class ChallengeService {
         challenge.setPoints(challengeManipulationDTO.getPoints());
         challenge.setCredits(challengeManipulationDTO.getCredits());
         challenge.setLevel(challengeManipulationDTO.getLevel());
+        challenge.setImageUrl(challengeManipulationDTO.getImageUrl());
+        challenge.setPremium(challengeManipulationDTO.getPremium());
         final Category category = challengeManipulationDTO.getCategory() == null ? null : categoryRepository.findById(challengeManipulationDTO.getCategory())
                 .orElseThrow(() -> new NotFoundException("category not found"));
         challenge.setCategory(category);
