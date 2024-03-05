@@ -33,16 +33,19 @@ public class ChallengeResource {
     }
 
     @GetMapping("/exposed")
-    public ResponseEntity<List<ChallengeSummaryDTO>> getExposedChallenges() {
-        return ResponseEntity.ok(challengeService.findExposedChallenges());
+    public ResponseEntity<List<ChallengeSummaryDTO>> getExposedChallenges(
+            @RequestParam(name = "categoryId", required = false) Long categoryId) {
+        return ResponseEntity.ok(challengeService.findExposedChallengesByCategoryId(categoryId));
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<ChallengeSummaryDTO>> searchChallenges(
             @RequestParam(name = "categoryId", required = false) Long categoryId,
+            @RequestParam(name = "exposed", required = false) Boolean exposed,
             @RequestParam(name = "level", required = false) ChallengeLevel level,
+            @RequestParam(name = "premium", required = false) Boolean premium,
             @RequestParam(name = "subscription", required = false) @Parameter(schema = @Schema(allowableValues = {"FREE", "PAID"})) String subscription) {
-        List<ChallengeSummaryDTO> challenges = challengeService.searchChallenges(categoryId, level, subscription);
+        List<ChallengeSummaryDTO> challenges = challengeService.searchChallenges(categoryId, exposed, level, premium, subscription);
         return ResponseEntity.ok(challenges);
     }
 

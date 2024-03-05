@@ -12,7 +12,6 @@ import dev.codebusters.code_busters.repos.SubmissionRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,16 +47,16 @@ public class ChallengeService {
     }
 
     @Transactional
-    public List<ChallengeSummaryDTO> findExposedChallenges() {
-        final List<Challenge> challenges = challengeRepository.findByExposedTrue();
+    public List<ChallengeSummaryDTO> findExposedChallengesByCategoryId(Long categoryId) {
+        final List<Challenge> challenges = challengeRepository.findExposedChallengesByCategoryId(categoryId);
         return challenges.stream()
                 .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
                 .toList();
     }
 
     @Transactional
-    public List<ChallengeSummaryDTO> searchChallenges(Long categoryId, ChallengeLevel level, String subscription) {
-        final List<Challenge> challenges = challengeRepository.searchChallenges(categoryId, level, subscription);
+    public List<ChallengeSummaryDTO> searchChallenges(Long categoryId, Boolean exposed, ChallengeLevel level, Boolean premium, String subscription) {
+        final List<Challenge> challenges = challengeRepository.searchChallenges(categoryId, exposed, level, premium, subscription);
         return challenges.stream()
                 .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
                 .toList();
