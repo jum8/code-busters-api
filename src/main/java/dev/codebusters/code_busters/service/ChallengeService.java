@@ -12,7 +12,6 @@ import dev.codebusters.code_busters.repos.SubmissionRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,8 +47,16 @@ public class ChallengeService {
     }
 
     @Transactional
-    public List<ChallengeSummaryDTO> searchChallenges(Long categoryId, ChallengeLevel level, String subscription) {
-        final List<Challenge> challenges = challengeRepository.searchChallenges(categoryId, level, subscription);
+    public List<ChallengeSummaryDTO> findExposedChallengesByCategoryId(Long categoryId) {
+        final List<Challenge> challenges = challengeRepository.findExposedChallengesByCategoryId(categoryId);
+        return challenges.stream()
+                .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
+                .toList();
+    }
+
+    @Transactional
+    public List<ChallengeSummaryDTO> searchChallenges(Long categoryId, Boolean exposed, ChallengeLevel level, Boolean premium, String subscription) {
+        final List<Challenge> challenges = challengeRepository.searchChallenges(categoryId, exposed, level, premium, subscription);
         return challenges.stream()
                 .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
                 .toList();
@@ -90,6 +97,8 @@ public class ChallengeService {
         challengeDTO.setPoints(challenge.getPoints());
         challengeDTO.setCredits(challenge.getCredits());
         challengeDTO.setLevel(challenge.getLevel());
+        challengeDTO.setImageUrl(challenge.getImageUrl());
+        challengeDTO.setPremium(challenge.getPremium());
         challengeDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getId());
         return challengeDTO;
     }
@@ -101,6 +110,8 @@ public class ChallengeService {
         challengeSummaryDTO.setPoints(challenge.getPoints());
         challengeSummaryDTO.setCredits(challenge.getCredits());
         challengeSummaryDTO.setLevel(challenge.getLevel());
+        challengeSummaryDTO.setImageUrl(challenge.getImageUrl());
+        challengeSummaryDTO.setPremium(challenge.getPremium());
         challengeSummaryDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getTitle());
         return challengeSummaryDTO;
     }
@@ -114,6 +125,8 @@ public class ChallengeService {
         challenge.setPoints(challengeDTO.getPoints());
         challenge.setCredits(challengeDTO.getCredits());
         challenge.setLevel(challengeDTO.getLevel());
+        challenge.setImageUrl(challengeDTO.getImageUrl());
+        challenge.setPremium(challengeDTO.getPremium());
         final Category category = challengeDTO.getCategory() == null ? null : categoryRepository.findById(challengeDTO.getCategory())
                 .orElseThrow(() -> new NotFoundException("category not found"));
         challenge.setCategory(category);
@@ -128,6 +141,8 @@ public class ChallengeService {
         challenge.setPoints(challengeManipulationDTO.getPoints());
         challenge.setCredits(challengeManipulationDTO.getCredits());
         challenge.setLevel(challengeManipulationDTO.getLevel());
+        challenge.setImageUrl(challengeManipulationDTO.getImageUrl());
+        challenge.setPremium(challengeManipulationDTO.getPremium());
         final Category category = challengeManipulationDTO.getCategory() == null ? null : categoryRepository.findById(challengeManipulationDTO.getCategory())
                 .orElseThrow(() -> new NotFoundException("category not found"));
         challenge.setCategory(category);

@@ -20,6 +20,10 @@ public class ChallengeSummaryDTO {
 
     private ChallengeLevel level;
 
+    private String imageUrl;
+
+    private Boolean premium;
+
     private String category;
 
 }

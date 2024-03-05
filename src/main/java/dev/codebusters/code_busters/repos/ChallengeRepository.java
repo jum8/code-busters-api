@@ -14,11 +14,21 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
     Challenge findFirstByCategory(Category category);
 
+    List<Challenge> findByExposedTrue();
     @Query("SELECT c FROM Challenge c WHERE "
             + "(:categoryId IS NULL OR c.category.id = :categoryId) AND "
+            + "c.exposed = true")
+    List<Challenge> findExposedChallengesByCategoryId(@Param("categoryId") Long categoryId);
+
+    @Query("SELECT c FROM Challenge c WHERE "
+            + "(:categoryId IS NULL OR c.category.id = :categoryId) AND "
+            + "(:exposed IS NULL OR c.exposed = :exposed) AND "
             + "(:level IS NULL OR c.level = :level) AND "
+            + "(:premium IS NULL OR c.premium = :premium) AND "
             + "(:subscription IS NULL OR (:subscription = 'FREE' AND c.credits = 0) OR (:subscription = 'PAID' AND c.credits > 0))")
     List<Challenge> searchChallenges(@Param("categoryId") Long categoryId,
+                                         @Param("exposed") Boolean exposed,
                                          @Param("level") ChallengeLevel level,
+                                         @Param("premium") Boolean premium,
                                          @Param("subscription") String subscription);
 }

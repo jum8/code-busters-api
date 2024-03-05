@@ -49,6 +49,11 @@ public class Challenge {
     @Enumerated(EnumType.STRING)
     private ChallengeLevel level;
 
+    private String imageUrl;
+
+    @Column(nullable = false)
+    private Boolean premium;
+
     @OneToMany(mappedBy = "challenge")
     private Set<Submission> challengeSubmissions;
 
