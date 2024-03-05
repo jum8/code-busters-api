@@ -37,6 +37,7 @@ public class ChallengeManipulationDTO {
     @NotNull
     private ChallengeLevel level;
 
+    @Size(max = 255)
     private String imageUrl;
 
     @NotNull

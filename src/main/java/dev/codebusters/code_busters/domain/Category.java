@@ -32,6 +32,8 @@ public class Category {
     @Column(name = "description")
     private String description;
 
+    private String imageUrl;
+
     @Column(nullable = false)
     private Boolean exposed;
 

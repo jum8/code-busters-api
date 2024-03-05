@@ -20,6 +20,9 @@ public class CategoryDTO {
     @Size(max = 255)
     private String description;
 
+    @Size(max = 255)
+    private String imageUrl;
+
     private Boolean exposed;
 
 }
