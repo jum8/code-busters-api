@@ -14,6 +14,8 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
     Challenge findFirstByCategory(Category category);
 
+    List<Challenge> findByExposedTrue();
+
     @Query("SELECT c FROM Challenge c WHERE "
             + "(:categoryId IS NULL OR c.category.id = :categoryId) AND "
             + "(:level IS NULL OR c.level = :level) AND "

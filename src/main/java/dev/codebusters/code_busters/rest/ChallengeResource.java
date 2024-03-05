@@ -32,6 +32,11 @@ public class ChallengeResource {
         return ResponseEntity.ok(challengeService.findAll());
     }
 
+    @GetMapping("/exposed")
+    public ResponseEntity<List<ChallengeSummaryDTO>> getExposedChallenges() {
+        return ResponseEntity.ok(challengeService.findExposedChallenges());
+    }
+
     @GetMapping("/search")
     public ResponseEntity<List<ChallengeSummaryDTO>> searchChallenges(
             @RequestParam(name = "categoryId", required = false) Long categoryId,

@@ -48,6 +48,14 @@ public class ChallengeService {
     }
 
     @Transactional
+    public List<ChallengeSummaryDTO> findExposedChallenges() {
+        final List<Challenge> challenges = challengeRepository.findByExposedTrue();
+        return challenges.stream()
+                .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
+                .toList();
+    }
+
+    @Transactional
     public List<ChallengeSummaryDTO> searchChallenges(Long categoryId, ChallengeLevel level, String subscription) {
         final List<Challenge> challenges = challengeRepository.searchChallenges(categoryId, level, subscription);
         return challenges.stream()
