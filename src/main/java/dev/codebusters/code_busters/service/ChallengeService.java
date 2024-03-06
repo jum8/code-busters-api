@@ -253,12 +253,7 @@ public class ChallengeService {
             referencedWarning.addParam(challengeSubmission.getId());
             return referencedWarning;
         }
-        final Hint challengeHint = hintRepository.findFirstByChallenge(challenge);
-        if (challengeHint != null) {
-            referencedWarning.setKey("challenge.hint.challenge.referenced");
-            referencedWarning.addParam(challengeHint.getId());
-            return referencedWarning;
-        }
+
         return null;
     }
 
