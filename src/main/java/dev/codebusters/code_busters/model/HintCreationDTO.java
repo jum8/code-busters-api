@@ -9,19 +9,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CategoryManipulationDTO {
+public class HintCreationDTO {
+
+    @NotNull
+    private Boolean visible;
 
     @Size(max = 255)
     @NotBlank
-    private String title;
-
-    @Size(max = 255)
     private String description;
 
-    @Size(max = 255)
-    private String imageUrl;
-
-    @NotNull
-    private Boolean exposed;
 
 }

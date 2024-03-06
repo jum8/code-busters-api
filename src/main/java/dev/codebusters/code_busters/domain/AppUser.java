@@ -49,6 +49,10 @@ public class AppUser {
     @JoinColumn(name = "country_id")
     private Country country;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "city_id")
+    private City city;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_type_id")
     private UserType userType;
@@ -56,4 +60,5 @@ public class AppUser {
     public AppUser() {
         this.enabled = true;
     }
+
 }

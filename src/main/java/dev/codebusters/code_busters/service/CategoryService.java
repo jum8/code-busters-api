@@ -32,6 +32,13 @@ public class CategoryService {
                 .toList();
     }
 
+    public List<CategoryDTO> findExposedCategories() {
+        final List<Category> categories = categoryRepository.findByExposedTrue();
+        return categories.stream()
+                .map(category -> mapToDTO(category, new CategoryDTO()))
+                .toList();
+    }
+
     public CategoryDTO get(final Long id) {
         return categoryRepository.findById(id)
                 .map(category -> mapToDTO(category, new CategoryDTO()))
@@ -60,6 +67,7 @@ public class CategoryService {
         categoryDTO.setAdded(category.getAdded());
         categoryDTO.setTitle(category.getTitle());
         categoryDTO.setDescription(category.getDescription());
+        categoryDTO.setImageUrl(category.getImageUrl());
         categoryDTO.setExposed(category.getExposed());
         return categoryDTO;
     }
@@ -67,6 +75,7 @@ public class CategoryService {
     private Category mapToEntity(final CategoryManipulationDTO categoryManipulationDTO, final Category category) {
         category.setTitle(categoryManipulationDTO.getTitle());
         category.setDescription(categoryManipulationDTO.getDescription());
+        category.setImageUrl(categoryManipulationDTO.getImageUrl());
         category.setExposed(categoryManipulationDTO.getExposed());
         return category;
     }

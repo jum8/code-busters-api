@@ -14,11 +14,15 @@ public class ChallengeSummaryDTO {
 
     private Boolean exposed;
 
-    private Integer points;
+    private Long points;
 
     private Long credits;
 
     private ChallengeLevel level;
+
+    private String imageUrl;
+
+    private Boolean premium;
 
     private String category;
 

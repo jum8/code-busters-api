@@ -1,11 +1,12 @@
 package dev.codebusters.code_busters.rest;
 
-import dev.codebusters.code_busters.model.ChallengeDTO;
-import dev.codebusters.code_busters.model.ChallengeManipulationDTO;
-import dev.codebusters.code_busters.model.ChallengeSummaryDTO;
+import com.fasterxml.jackson.annotation.JsonView;
+import dev.codebusters.code_busters.model.*;
 import dev.codebusters.code_busters.service.ChallengeService;
 import dev.codebusters.code_busters.util.ReferencedException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -13,14 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -39,9 +33,32 @@ public class ChallengeResource {
         return ResponseEntity.ok(challengeService.findAll());
     }
 
+    @GetMapping("/exposed")
+    public ResponseEntity<List<ChallengeSummaryDTO>> getExposedChallenges(
+            @RequestParam(name = "categoryId", required = false) Long categoryId) {
+        return ResponseEntity.ok(challengeService.findExposedChallengesByCategoryId(categoryId));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ChallengeSummaryDTO>> searchChallenges(
+            @RequestParam(name = "categoryId", required = false) Long categoryId,
+            @RequestParam(name = "exposed", required = false) Boolean exposed,
+            @RequestParam(name = "level", required = false) ChallengeLevel level,
+            @RequestParam(name = "premium", required = false) Boolean premium,
+            @RequestParam(name = "subscription", required = false) @Parameter(schema = @Schema(allowableValues = {"FREE", "PAID"})) String subscription) {
+        List<ChallengeSummaryDTO> challenges = challengeService.searchChallenges(categoryId, exposed, level, premium, subscription);
+        return ResponseEntity.ok(challenges);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<ChallengeDTO> getChallenge(@PathVariable(name = "id") final Long id) {
+    @JsonView({ChallengeView.GetById.class})
+    public ResponseEntity<ChallengeUpdateDTO> getChallenge(@PathVariable(name = "id") final Long id) {
+        return ResponseEntity.ok(challengeService.get(id));
+    }
+    @GetMapping("/{id}/admin")
+    @JsonView({ChallengeView.GetByIdAdmin.class})
+    public ResponseEntity<ChallengeUpdateDTO> getChallengeAdmin(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(challengeService.get(id));
     }
 
@@ -49,16 +66,16 @@ public class ChallengeResource {
     @PostMapping
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createChallenge(
-            @RequestBody @Valid final ChallengeManipulationDTO challengeManipulationDTO) {
-        final Long createdId = challengeService.create(challengeManipulationDTO);
+            @RequestBody @Valid final ChallengeCreationDTO challengeCreationDTO) {
+        final Long createdId = challengeService.create(challengeCreationDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateChallenge(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final ChallengeDTO challengeDTO) {
-        challengeService.update(id, challengeDTO);
+            @RequestBody @Valid final ChallengeUpdateDTO challengeUpdateDTO) {
+        challengeService.update(id, challengeUpdateDTO);
         return ResponseEntity.ok(id);
     }
 

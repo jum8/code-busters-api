@@ -40,7 +40,7 @@ public class Challenge {
     private String flag;
 
     @Column(nullable = false)
-    private Integer points;
+    private Long points;
 
     @Column(nullable = false)
     private Long credits;
@@ -48,6 +48,11 @@ public class Challenge {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ChallengeLevel level;
+
+    private String imageUrl;
+
+    @Column(nullable = false)
+    private Boolean premium;
 
     @OneToMany(mappedBy = "challenge")
     private Set<Submission> challengeSubmissions;

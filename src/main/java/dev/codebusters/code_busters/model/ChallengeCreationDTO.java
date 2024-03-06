@@ -1,6 +1,5 @@
 package dev.codebusters.code_busters.model;
 
-import dev.codebusters.code_busters.domain.Hint;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,13 +7,12 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.OffsetDateTime;
 import java.util.Set;
 
 
 @Getter
 @Setter
-public class ChallengeManipulationDTO {
+public class ChallengeCreationDTO {
 
     @NotBlank
     @Size(max = 255)
@@ -31,7 +29,7 @@ public class ChallengeManipulationDTO {
     private String flag;
 
     @NotNull
-    private Integer points;
+    private Long points;
 
     @NotNull
     private Long credits;
@@ -39,8 +37,14 @@ public class ChallengeManipulationDTO {
     @NotNull
     private ChallengeLevel level;
 
+    @Size(max = 255)
+    private String imageUrl;
+
+    @NotNull
+    private Boolean premium;
+
     private Long category;
 
-    private Set<@Valid HintManipulationDTO> hints;
+    private Set<@Valid HintCreationDTO> hints;
 
 }

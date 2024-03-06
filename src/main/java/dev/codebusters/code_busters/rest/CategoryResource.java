@@ -32,10 +32,17 @@ public class CategoryResource {
         this.categoryService = categoryService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         return ResponseEntity.ok(categoryService.findAll());
     }
+
+    @GetMapping("/exposed")
+    public ResponseEntity<List<CategoryDTO>> getExposedCategories() {
+        return ResponseEntity.ok(categoryService.findExposedCategories());
+    }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
