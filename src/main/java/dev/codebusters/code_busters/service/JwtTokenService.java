@@ -15,7 +15,7 @@ import java.time.Instant;
 @Service
 @Slf4j
 public class JwtTokenService {
-    private static final Duration JWT_TOKEN_VALIDITY = Duration.ofMinutes(20);
+    private static final Duration JWT_TOKEN_VALIDITY = Duration.ofDays(30);
 
     private final Algorithm hmac512;
     private final JWTVerifier verifier;
