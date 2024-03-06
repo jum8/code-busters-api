@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class ChallengeManipulationDTO {
+public class ChallengeCreationDTO {
 
     @NotBlank
     @Size(max = 255)
@@ -45,6 +45,6 @@ public class ChallengeManipulationDTO {
 
     private Long category;
 
-    private Set<@Valid HintManipulationDTO> hints;
+    private Set<@Valid HintCreationDTO> hints;
 
 }

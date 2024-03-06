@@ -62,24 +62,26 @@ public class ChallengeService {
                 .toList();
     }
 
-    public ChallengeDTO get(final Long id) {
+    @Transactional
+    public ChallengeUpdateDTO get(final Long id) {
         return challengeRepository.findById(id)
-                .map(challenge -> mapToDTO(challenge, new ChallengeDTO()))
+                .map(challenge -> mapToUpdateDTO(challenge, new ChallengeUpdateDTO()))
                 .orElseThrow(NotFoundException::new);
     }
 
     @Transactional
-    public Long create(final ChallengeManipulationDTO challengeManipulationDTO) {
+    public Long create(final ChallengeCreationDTO challengeCreationDTO) {
         final Challenge challenge = new Challenge();
 
-        mapChallegeManipulatioDTOToEntity(challengeManipulationDTO, challenge);
+        mapChallegeCreatioDTOToEntity(challengeCreationDTO, challenge);
         return challengeRepository.save(challenge).getId();
     }
 
-    public void update(final Long id, final ChallengeManipulationDTO challengeManipulationDTO) {
+    @Transactional
+    public void update(final Long id, final ChallengeUpdateDTO challengeUpdateDTO) {
         final Challenge challenge = challengeRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
-        mapChallegeManipulatioDTOToEntity(challengeManipulationDTO, challenge);
+        mapChallegeUpdateDTOToEntity(challengeUpdateDTO, challenge);
         challengeRepository.save(challenge);
     }
 
@@ -102,6 +104,46 @@ public class ChallengeService {
         challengeDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getId());
         return challengeDTO;
     }
+
+    private ChallengeCreationDTO mapToCreationDTO(final Challenge challenge, final ChallengeCreationDTO challengeCreationDTO) {
+        challengeCreationDTO.setTitle(challenge.getTitle());
+        challengeCreationDTO.setDescription(challenge.getDescription());
+        challengeCreationDTO.setExposed(challenge.getExposed());
+        challengeCreationDTO.setFlag(challenge.getFlag());
+        challengeCreationDTO.setPoints(challenge.getPoints());
+        challengeCreationDTO.setCredits(challenge.getCredits());
+        challengeCreationDTO.setLevel(challenge.getLevel());
+        challengeCreationDTO.setImageUrl(challenge.getImageUrl());
+        challengeCreationDTO.setPremium(challenge.getPremium());
+        challengeCreationDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getId());
+        final Set<HintCreationDTO> hints = challenge.getHints().stream()
+                .map(hint -> mapToHintCreationDTO(hint, new HintCreationDTO()))
+                .collect(Collectors.toSet());
+        challengeCreationDTO.setHints(hints);
+
+        return challengeCreationDTO;
+    }
+
+    private ChallengeUpdateDTO mapToUpdateDTO(final Challenge challenge, final ChallengeUpdateDTO challengeUpdateDTO) {
+        challengeUpdateDTO.setTitle(challenge.getTitle());
+        challengeUpdateDTO.setDescription(challenge.getDescription());
+        challengeUpdateDTO.setExposed(challenge.getExposed());
+        challengeUpdateDTO.setFlag(challenge.getFlag());
+        challengeUpdateDTO.setPoints(challenge.getPoints());
+        challengeUpdateDTO.setCredits(challenge.getCredits());
+        challengeUpdateDTO.setLevel(challenge.getLevel());
+        challengeUpdateDTO.setImageUrl(challenge.getImageUrl());
+        challengeUpdateDTO.setPremium(challenge.getPremium());
+        challengeUpdateDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getId());
+        final Set<HintUpdateDTO> hints = challenge.getHints().stream()
+                .map(hint -> mapToHintUpdateDTO(hint, new HintUpdateDTO()))
+                .collect(Collectors.toSet());
+        challengeUpdateDTO.setHints(hints);
+
+        return challengeUpdateDTO;
+    }
+
+
 
     private ChallengeSummaryDTO mapToSummaryDTO(final Challenge challenge, final ChallengeSummaryDTO challengeSummaryDTO) {
         challengeSummaryDTO.setId(challenge.getId());
@@ -133,31 +175,72 @@ public class ChallengeService {
         return challenge;
     }
 
-    private Challenge mapChallegeManipulatioDTOToEntity(final ChallengeManipulationDTO challengeManipulationDTO, final Challenge challenge) {
-        challenge.setTitle(challengeManipulationDTO.getTitle());
-        challenge.setDescription(challengeManipulationDTO.getDescription());
-        challenge.setExposed(challengeManipulationDTO.getExposed());
-        challenge.setFlag(challengeManipulationDTO.getFlag());
-        challenge.setPoints(challengeManipulationDTO.getPoints());
-        challenge.setCredits(challengeManipulationDTO.getCredits());
-        challenge.setLevel(challengeManipulationDTO.getLevel());
-        challenge.setImageUrl(challengeManipulationDTO.getImageUrl());
-        challenge.setPremium(challengeManipulationDTO.getPremium());
-        final Category category = challengeManipulationDTO.getCategory() == null ? null : categoryRepository.findById(challengeManipulationDTO.getCategory())
+    private Challenge mapChallegeCreatioDTOToEntity(final ChallengeCreationDTO challengeCreationDTO, final Challenge challenge) {
+        challenge.setTitle(challengeCreationDTO.getTitle());
+        challenge.setDescription(challengeCreationDTO.getDescription());
+        challenge.setExposed(challengeCreationDTO.getExposed());
+        challenge.setFlag(challengeCreationDTO.getFlag());
+        challenge.setPoints(challengeCreationDTO.getPoints());
+        challenge.setCredits(challengeCreationDTO.getCredits());
+        challenge.setLevel(challengeCreationDTO.getLevel());
+        challenge.setImageUrl(challengeCreationDTO.getImageUrl());
+        challenge.setPremium(challengeCreationDTO.getPremium());
+        final Category category = challengeCreationDTO.getCategory() == null ? null : categoryRepository.findById(challengeCreationDTO.getCategory())
                 .orElseThrow(() -> new NotFoundException("category not found"));
         challenge.setCategory(category);
-        final Set<Hint> hints = challengeManipulationDTO.getHints().stream()
-                .map(hintManipulationDTO -> mapHintToEntity(hintManipulationDTO, new Hint()))
+        final Set<Hint> hints = challengeCreationDTO.getHints().stream()
+                .map(hintCreationDTO -> mapHintCreationDTOToEntity(hintCreationDTO, new Hint()))
                 .collect(Collectors.toSet());
         challenge.setHints(hints);
         hints.forEach(hint -> hint.setChallenge(challenge));
         return challenge;
     }
 
-    private Hint mapHintToEntity(final HintManipulationDTO hintManipulationDTO, final Hint hint) {
-        hint.setVisible(hintManipulationDTO.getVisible());
-        hint.setDescription(hintManipulationDTO.getDescription());
+    private Challenge mapChallegeUpdateDTOToEntity(final ChallengeUpdateDTO challengeUpdateDTO, final Challenge challenge) {
+        challenge.setTitle(challengeUpdateDTO.getTitle());
+        challenge.setDescription(challengeUpdateDTO.getDescription());
+        challenge.setExposed(challengeUpdateDTO.getExposed());
+        challenge.setFlag(challengeUpdateDTO.getFlag());
+        challenge.setPoints(challengeUpdateDTO.getPoints());
+        challenge.setCredits(challengeUpdateDTO.getCredits());
+        challenge.setLevel(challengeUpdateDTO.getLevel());
+        challenge.setImageUrl(challengeUpdateDTO.getImageUrl());
+        challenge.setPremium(challengeUpdateDTO.getPremium());
+        final Category category = challengeUpdateDTO.getCategory() == null ? null : categoryRepository.findById(challengeUpdateDTO.getCategory())
+                .orElseThrow(() -> new NotFoundException("category not found"));
+        challenge.setCategory(category);
+        final Set<Hint> hints = challengeUpdateDTO.getHints().stream()
+                .map(hintUpdateDTO -> mapHintUpdateDTOToEntity(hintUpdateDTO, new Hint()))
+                .collect(Collectors.toSet());
+        challenge.setHints(hints);
+        hints.forEach(hint -> hint.setChallenge(challenge));
+        return challenge;
+    }
+
+    private Hint mapHintCreationDTOToEntity(final HintCreationDTO hintCreationDTO, final Hint hint) {
+        hint.setVisible(hintCreationDTO.getVisible());
+        hint.setDescription(hintCreationDTO.getDescription());
         return hint;
+    }
+
+    private Hint mapHintUpdateDTOToEntity(final HintUpdateDTO hintUpdateDTO, final Hint hint) {
+        hint.setId(hintUpdateDTO.getId());
+        hint.setVisible(hintUpdateDTO.getVisible());
+        hint.setDescription(hintUpdateDTO.getDescription());
+        return hint;
+    }
+
+    private HintCreationDTO mapToHintCreationDTO(final Hint hint, final HintCreationDTO hintCreationDTO) {
+        hintCreationDTO.setVisible(hint.getVisible());
+        hintCreationDTO.setDescription(hint.getDescription());
+        return hintCreationDTO;
+    }
+
+    private HintUpdateDTO mapToHintUpdateDTO(final Hint hint, final HintUpdateDTO hintUpdateDTO) {
+        hintUpdateDTO.setId(hint.getId());
+        hintUpdateDTO.setVisible(hint.getVisible());
+        hintUpdateDTO.setDescription(hint.getDescription());
+        return hintUpdateDTO;
     }
 
     public ReferencedWarning getReferencedWarning(final Long id) {

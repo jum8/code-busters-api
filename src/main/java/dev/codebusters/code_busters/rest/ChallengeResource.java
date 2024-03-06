@@ -1,5 +1,6 @@
 package dev.codebusters.code_busters.rest;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import dev.codebusters.code_busters.model.*;
 import dev.codebusters.code_busters.service.ChallengeService;
 import dev.codebusters.code_busters.util.ReferencedException;
@@ -51,7 +52,13 @@ public class ChallengeResource {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<ChallengeDTO> getChallenge(@PathVariable(name = "id") final Long id) {
+    @JsonView({ChallengeView.GetById.class})
+    public ResponseEntity<ChallengeUpdateDTO> getChallenge(@PathVariable(name = "id") final Long id) {
+        return ResponseEntity.ok(challengeService.get(id));
+    }
+    @GetMapping("/{id}/admin")
+    @JsonView({ChallengeView.GetByIdAdmin.class})
+    public ResponseEntity<ChallengeUpdateDTO> getChallengeAdmin(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(challengeService.get(id));
     }
 
@@ -59,16 +66,16 @@ public class ChallengeResource {
     @PostMapping
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createChallenge(
-            @RequestBody @Valid final ChallengeManipulationDTO challengeManipulationDTO) {
-        final Long createdId = challengeService.create(challengeManipulationDTO);
+            @RequestBody @Valid final ChallengeCreationDTO challengeCreationDTO) {
+        final Long createdId = challengeService.create(challengeCreationDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateChallenge(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final ChallengeManipulationDTO challengeManipulationDTO) {
-        challengeService.update(id, challengeManipulationDTO);
+            @RequestBody @Valid final ChallengeUpdateDTO challengeUpdateDTO) {
+        challengeService.update(id, challengeUpdateDTO);
         return ResponseEntity.ok(id);
     }
 
