@@ -48,7 +48,7 @@ public class JwtSecurityConfig {
         return http
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/", "/auth/**", "/swagger-ui/**", "v3/api-docs/**").permitAll()
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.GET, "/categories").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -65,4 +65,13 @@ public class JwtSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+    private static final String[] AUTH_WHITELIST = {
+            "/",
+            "/auth/**",
+            "/swagger-ui/**",
+            "v3/api-docs/**",
+            "/challenges/exposed",
+            "/categories/exposed"
+    };
 }
