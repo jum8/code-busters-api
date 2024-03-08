@@ -212,7 +212,8 @@ public class ChallengeService {
         final Set<Hint> hints = challengeUpdateDTO.getHints().stream()
                 .map(hintUpdateDTO -> mapHintUpdateDTOToEntity(hintUpdateDTO, new Hint()))
                 .collect(Collectors.toSet());
-        challenge.setHints(hints);
+        challenge.getHints().clear();
+        challenge.getHints().addAll(hints);
         hints.forEach(hint -> hint.setChallenge(challenge));
         return challenge;
     }
