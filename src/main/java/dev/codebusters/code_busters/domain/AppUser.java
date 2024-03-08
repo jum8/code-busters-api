@@ -42,6 +42,15 @@ public class AppUser {
     @Column
     private Boolean enabled;
 
+    @Column
+    private Boolean premium;
+
+    @Column
+    private Long points;
+
+    @Column
+    private Integer profileImage;
+
     @OneToMany(mappedBy = "user")
     private Set<Submission> userSubmissions;
 
@@ -59,6 +68,8 @@ public class AppUser {
 
     public AppUser() {
         this.enabled = true;
+        this.premium = false;
+        this.points = 0L;
     }
 
 }
