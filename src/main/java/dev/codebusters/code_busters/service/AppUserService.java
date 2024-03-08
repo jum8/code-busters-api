@@ -129,8 +129,10 @@ public class AppUserService {
         appUserDTO.setName(appUser.getName());
         appUserDTO.setAdded(appUser.getAdded());
         appUserDTO.setLastActive(appUser.getLastActive());
-        appUserDTO.setPassword(appUser.getPassword());
         appUserDTO.setEnabled(appUser.getEnabled());
+        appUserDTO.setPremium(appUser.getPremium());
+        appUserDTO.setPoints(appUser.getPoints());
+        appUserDTO.setProfileImage(appUser.getProfileImage());
         appUserDTO.setCountry(appUser.getCountry() == null ? null : appUser.getCountry().getId());
         appUserDTO.setCity(appUser.getCity() == null ? null : appUser.getCity().getId());
         appUserDTO.setUserType(appUser.getUserType() == null ? null : appUser.getUserType().getId());
@@ -138,21 +140,14 @@ public class AppUserService {
     }
 
     private AppUser mapToEntity(final AppUserDTO appUserDTO, final AppUser appUser) {
-        appUser.setEmail(appUserDTO.getEmail());
         appUser.setName(appUserDTO.getName());
-        appUser.setAdded(appUserDTO.getAdded());
-        appUser.setLastActive(appUserDTO.getLastActive());
-        appUser.setPassword(appUserDTO.getPassword());
-        appUser.setEnabled(appUserDTO.getEnabled());
+        appUser.setProfileImage(appUserDTO.getProfileImage());
         final Country country = appUserDTO.getCountry() == null ? null : countryRepository.findById(appUserDTO.getCountry())
                 .orElseThrow(() -> new NotFoundException("country not found"));
         appUser.setCountry(country);
         final City city = appUserDTO.getCity() == null ? null : cityRepository.findById(appUserDTO.getCity())
                 .orElseThrow(() -> new NotFoundException("city not found"));
         appUser.setCity(city);
-        final UserType userType = appUserDTO.getUserType() == null ? null : userTypeRepository.findById(appUserDTO.getUserType())
-                .orElseThrow(() -> new NotFoundException("userType not found"));
-        appUser.setUserType(userType);
         return appUser;
     }
 
