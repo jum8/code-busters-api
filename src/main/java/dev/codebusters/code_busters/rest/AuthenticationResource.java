@@ -3,6 +3,7 @@ package dev.codebusters.code_busters.rest;
 import dev.codebusters.code_busters.model.AppUserDTO;
 import dev.codebusters.code_busters.model.auth.AuthenticationRequest;
 import dev.codebusters.code_busters.model.auth.AuthenticationResponse;
+import dev.codebusters.code_busters.model.auth.JwtUserDetails;
 import dev.codebusters.code_busters.model.auth.UserRegistrationRequest;
 import dev.codebusters.code_busters.service.AppUserService;
 import dev.codebusters.code_busters.service.JwtTokenService;
@@ -52,8 +53,15 @@ public class AuthenticationResource {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
-        final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(authenticationRequest.getLogin());
+        final JwtUserDetails userDetails = jwtUserDetailsService.loadUserByUsername(authenticationRequest.getLogin());
         final AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+        authenticationResponse.setEmail(userDetails.getEmail());
+        authenticationResponse.setName(userDetails.getName());
+        authenticationResponse.setPremium(userDetails.getPremium());
+        authenticationResponse.setPoints(userDetails.getPoints());
+        authenticationResponse.setProfileImage(userDetails.getProfileImage());
+        authenticationResponse.setChallengesSolved(userDetails.getChallengesSolved());
+        authenticationResponse.setUserType(userDetails.getUserType());
         authenticationResponse.setAccessToken(jwtTokenService.generateToken(userDetails));
         return authenticationResponse;
     }
