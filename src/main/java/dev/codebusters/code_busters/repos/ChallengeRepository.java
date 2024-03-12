@@ -31,4 +31,8 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
                                          @Param("level") ChallengeLevel level,
                                          @Param("premium") Boolean premium,
                                          @Param("subscription") String subscription);
+
+    @Query("SELECT c.flag FROM Challenge c WHERE "
+            + "c.id = :id")
+    String findFlagByChallengeId(@Param("id") Long id);
 }

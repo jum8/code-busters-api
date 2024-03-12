@@ -1,5 +1,7 @@
 package dev.codebusters.code_busters.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,8 +10,13 @@ import lombok.Setter;
 @Setter
 public class SubmissionDTO {
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
+    @NotNull
     private Long user;
+    @NotNull
     private Long challenge;
+    @NotNull
+    private String flag;
 
 }
