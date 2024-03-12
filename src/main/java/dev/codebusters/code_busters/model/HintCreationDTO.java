@@ -18,5 +18,8 @@ public class HintCreationDTO {
     @NotBlank
     private String description;
 
+    @NotNull
+    private Integer order;
+
 
 }
