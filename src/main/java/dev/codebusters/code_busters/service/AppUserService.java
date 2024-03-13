@@ -24,16 +24,19 @@ public class AppUserService {
 
     //private final EmailService emailService;
     private final SubmissionRepository submissionRepository;
+    private final UserSubscriptionRepository userSubscriptionRepository;
     private final PasswordEncoder passwordEncoder;
 
     public AppUserService(final AppUserRepository appUserRepository,
-                          final CountryRepository countryRepository, final CityRepository cityRepository, final UserTypeRepository userTypeRepository,
-                          final SubmissionRepository submissionRepository, PasswordEncoder passwordEncoder) {
+                          final CountryRepository countryRepository, final CityRepository cityRepository,
+                          final UserTypeRepository userTypeRepository, final SubmissionRepository submissionRepository,
+                          final UserSubscriptionRepository userSubscriptionRepository, final PasswordEncoder passwordEncoder) {
         this.appUserRepository = appUserRepository;
         this.countryRepository = countryRepository;
         this.cityRepository = cityRepository;
         this.userTypeRepository = userTypeRepository;
         this.submissionRepository = submissionRepository;
+        this.userSubscriptionRepository = userSubscriptionRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -169,6 +172,12 @@ public class AppUserService {
         if (userSubmission != null) {
             referencedWarning.setKey("appUser.submission.user.referenced");
             referencedWarning.addParam(userSubmission.getId());
+            return referencedWarning;
+        }
+        final UserSubscription userUserSubscription = userSubscriptionRepository.findFirstByUser(appUser);
+        if (userUserSubscription != null) {
+            referencedWarning.setKey("appUser.userSubscription.user.referenced");
+            referencedWarning.addParam(userUserSubscription.getId());
             return referencedWarning;
         }
         return null;
