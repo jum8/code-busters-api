@@ -24,7 +24,7 @@ public class SubscriptionExpirationService {
     }
 
     // Runs every day at midnight
-    @Scheduled(cron = "0 10 15 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void checkSubscriptionExpiration() {
         LocalDate today = LocalDate.now();
