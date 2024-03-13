@@ -66,6 +66,9 @@ public class AppUser {
     @JoinColumn(name = "user_type_id")
     private UserType userType;
 
+    @OneToMany(mappedBy = "user")
+    private Set<UserSubscription> subscriptions;
+
     public AppUser() {
         this.enabled = true;
         this.premium = false;
