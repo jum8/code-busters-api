@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -47,18 +48,18 @@ public class UserSubscriptionService {
     @Transactional
     public Long create(final UserSubscriptionDTO userSubscriptionDTO) {
         final UserSubscription userSubscription = new UserSubscription();
-        final Subscription subscription = subscriptionRepository.findById(userSubscriptionDTO.getSubscription())
-                        .orElseThrow(NotFoundException::new);
-        final AppUser user = appUserRepository.findById(userSubscriptionDTO.getUser())
-                .orElseThrow(NotFoundException::new);
+
         mapToEntity(userSubscriptionDTO, userSubscription);
 
-        user.setPremium(true);
-        appUserRepository.save(user);
+        userSubscription.getUser().setPremium(true);
 
-        LocalDate now = LocalDate.now();
-        userSubscription.setStartDate(now);
-        userSubscription.setExpirationDate(now.plusMonths(subscription.getDurationInMonths()));
+        Optional<LocalDate> maxExpirationDate = userSubscriptionRepository.findMaxExpirationDateByUserId(
+                userSubscription.getUser().getId());
+
+        LocalDate startDate = maxExpirationDate.map(date -> date.plusDays(1)).orElseGet(LocalDate::now);
+
+        userSubscription.setStartDate(startDate);
+        userSubscription.setExpirationDate(startDate.plusMonths(userSubscription.getSubscription().getDurationInMonths()));
 
         return userSubscriptionRepository.save(userSubscription).getId();
     }

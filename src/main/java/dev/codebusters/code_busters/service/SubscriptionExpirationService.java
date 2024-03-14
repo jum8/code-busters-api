@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SubscriptionExpirationService {
@@ -28,10 +29,16 @@ public class SubscriptionExpirationService {
     @Transactional
     public void checkSubscriptionExpiration() {
         LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
 
         List<UserSubscription> expiredSubscriptions = userSubscriptionRepository.findByExpirationDate(today);
 
-        for (UserSubscription subscription : expiredSubscriptions) {
+        List<UserSubscription> actualExpiredSubscriptions = expiredSubscriptions.stream()
+                .filter(subscription -> !userSubscriptionRepository.existsByUserIdAndStartDateEquals(
+                            subscription.getUser().getId(), tomorrow))
+                .toList();
+
+        for (UserSubscription subscription : actualExpiredSubscriptions) {
             AppUser user = subscription.getUser();
             user.setPremium(false);
             appUserRepository.save(user);
