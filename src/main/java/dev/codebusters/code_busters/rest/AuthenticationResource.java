@@ -16,10 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -37,6 +34,7 @@ public class AuthenticationResource {
         this.appUserService = appUserService;
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/register")
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createAppUser(@RequestBody @Valid final UserRegistrationRequest userRegistrationRequest) {
@@ -44,6 +42,7 @@ public class AuthenticationResource {
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/authenticate")
     public AuthenticationResponse authenticate(@RequestBody @Valid final AuthenticationRequest authenticationRequest) {
         try {
