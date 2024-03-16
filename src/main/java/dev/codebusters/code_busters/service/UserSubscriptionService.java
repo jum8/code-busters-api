@@ -3,10 +3,12 @@ package dev.codebusters.code_busters.service;
 import dev.codebusters.code_busters.domain.AppUser;
 import dev.codebusters.code_busters.domain.Subscription;
 import dev.codebusters.code_busters.domain.UserSubscription;
+import dev.codebusters.code_busters.domain.UserType;
 import dev.codebusters.code_busters.model.UserSubscriptionDTO;
 import dev.codebusters.code_busters.repos.AppUserRepository;
 import dev.codebusters.code_busters.repos.SubscriptionRepository;
 import dev.codebusters.code_busters.repos.UserSubscriptionRepository;
+import dev.codebusters.code_busters.repos.UserTypeRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
@@ -24,12 +26,15 @@ public class UserSubscriptionService {
     private final AppUserRepository appUserRepository;
     private final SubscriptionRepository subscriptionRepository;
 
+    private final UserTypeRepository userTypeRepository;
+
     public UserSubscriptionService(final UserSubscriptionRepository userSubscriptionRepository,
                                    final AppUserRepository appUserRepository,
-                                   final SubscriptionRepository subscriptionRepository) {
+                                   final SubscriptionRepository subscriptionRepository, UserTypeRepository userTypeRepository) {
         this.userSubscriptionRepository = userSubscriptionRepository;
         this.appUserRepository = appUserRepository;
         this.subscriptionRepository = subscriptionRepository;
+        this.userTypeRepository = userTypeRepository;
     }
 
     public List<UserSubscriptionDTO> findAll() {
@@ -51,7 +56,12 @@ public class UserSubscriptionService {
 
         mapToEntity(userSubscriptionDTO, userSubscription);
 
-        userSubscription.getUser().setPremium(true);
+        userSubscription.getUser().setPremium(true); // todo ver si eliminarlo y usar userType
+
+        UserType premiumUserType = userTypeRepository.findByTitle("PREMIUM")
+                .orElseThrow(() -> new NotFoundException("userType not found"));
+
+        userSubscription.getUser().setUserType(premiumUserType);
 
         Optional<LocalDate> maxExpirationDate = userSubscriptionRepository.findMaxExpirationDateByUserId(
                 userSubscription.getUser().getId());
