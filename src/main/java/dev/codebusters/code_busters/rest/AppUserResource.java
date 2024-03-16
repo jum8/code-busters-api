@@ -37,14 +37,13 @@ public class AppUserResource {
         return ResponseEntity.ok(appUserService.findAll());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+
     @GetMapping("/{id}")
     public ResponseEntity<AppUserDTO> getAppUser(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(appUserService.get(id));
     }
 
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateAppUser(@PathVariable(name = "id") final Long id,
             @RequestBody @Valid final AppUserDTO appUserDTO) {

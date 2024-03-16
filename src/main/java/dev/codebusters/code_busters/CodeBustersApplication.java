@@ -59,6 +59,25 @@ public class CodeBustersApplication {
                 userRepository.save(adminUser);
             }
 
+            UserType userTypePremium = userTypeRepository.findById(3L).orElseGet(() -> {
+                UserType newUserType = new UserType();
+                newUserType.setTitle("PREMIUM");
+                newUserType = userTypeRepository.save(newUserType);
+                return newUserType;
+            });
+
+            String premiumUserEmail = "max@mail.com";
+            if (!userRepository.existsByEmail(premiumUserEmail)) {
+                AppUser premiumUser = new AppUser();
+                premiumUser.setName("Max Power");
+                premiumUser.setEmail(premiumUserEmail);
+                premiumUser.setPassword(passwordEncoder.encode("password"));
+                premiumUser.setUserType(userTypePremium);
+                premiumUser.setPremium(true); // todo reemplazar toda la logica premium por userType y borrar campo
+                userRepository.save(premiumUser);
+            }
+
+
         };
     }
 

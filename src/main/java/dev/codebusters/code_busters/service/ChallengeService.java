@@ -89,6 +89,10 @@ public class ChallengeService {
         challengeRepository.deleteById(id);
     }
 
+    public Boolean isChallengeNotPremium(final Long id) {
+        return challengeRepository.existsByIdAndPremiumIsFalse(id);
+    }
+
     private ChallengeDTO mapToDTO(final Challenge challenge, final ChallengeDTO challengeDTO) {
         challengeDTO.setId(challenge.getId());
         challengeDTO.setAdded(challenge.getAdded());
