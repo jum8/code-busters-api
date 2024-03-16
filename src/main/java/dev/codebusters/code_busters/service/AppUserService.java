@@ -158,9 +158,9 @@ public class AppUserService {
         appUser.setEmail(userRegistrationRequest.getEmail());
         appUser.setName(userRegistrationRequest.getName());
         appUser.setPassword(userRegistrationRequest.getPassword());
-        final UserType userType = userTypeRepository.findById(1L)
+        final UserType userType = userTypeRepository.findByTitle("USER")
                 .orElseThrow(() -> new NotFoundException("userType not found"));
-        appUser.setUserType(userType); // TODO? ver si cambiar el userType a Enum
+        appUser.setUserType(userType);
         return appUser;
     }
 

@@ -35,4 +35,6 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
     @Query("SELECT c.flag FROM Challenge c WHERE "
             + "c.id = :id")
     String findFlagByChallengeId(@Param("id") Long id);
+
+    boolean existsByIdAndPremiumIsFalse(Long challengeId);
 }
