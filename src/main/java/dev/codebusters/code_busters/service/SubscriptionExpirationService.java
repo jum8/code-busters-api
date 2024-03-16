@@ -3,25 +3,30 @@ package dev.codebusters.code_busters.service;
 
 import dev.codebusters.code_busters.domain.AppUser;
 import dev.codebusters.code_busters.domain.UserSubscription;
+import dev.codebusters.code_busters.domain.UserType;
 import dev.codebusters.code_busters.repos.AppUserRepository;
 import dev.codebusters.code_busters.repos.UserSubscriptionRepository;
+import dev.codebusters.code_busters.repos.UserTypeRepository;
+import dev.codebusters.code_busters.util.NotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SubscriptionExpirationService {
     private final UserSubscriptionRepository userSubscriptionRepository;
     private final AppUserRepository appUserRepository;
 
+    private final UserTypeRepository userTypeRepository;
+
     public SubscriptionExpirationService(UserSubscriptionRepository userSubscriptionRepository,
-                                         AppUserRepository appUserRepository) {
+                                         AppUserRepository appUserRepository, UserTypeRepository userTypeRepository) {
         this.userSubscriptionRepository = userSubscriptionRepository;
         this.appUserRepository = appUserRepository;
+        this.userTypeRepository = userTypeRepository;
     }
 
     // Runs every day at midnight
@@ -38,9 +43,13 @@ public class SubscriptionExpirationService {
                             subscription.getUser().getId(), tomorrow))
                 .toList();
 
+        UserType userUserType = userTypeRepository.findByTitle("USER")
+                .orElseThrow(() -> new NotFoundException("userType not found"));
+
         for (UserSubscription subscription : actualExpiredSubscriptions) {
             AppUser user = subscription.getUser();
-            user.setPremium(false);
+            user.setPremium(false); // todo ver si eliminarlo y usar userType
+            user.setUserType(userUserType);
             appUserRepository.save(user);
         }
     }
