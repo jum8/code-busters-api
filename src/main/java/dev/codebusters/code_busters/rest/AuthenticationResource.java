@@ -54,6 +54,7 @@ public class AuthenticationResource {
 
         final JwtUserDetails userDetails = jwtUserDetailsService.loadUserByUsername(authenticationRequest.getLogin());
         final AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+        authenticationResponse.setId(userDetails.getId());
         authenticationResponse.setEmail(userDetails.getEmail());
         authenticationResponse.setName(userDetails.getName());
         authenticationResponse.setPremium(userDetails.getPremium());
