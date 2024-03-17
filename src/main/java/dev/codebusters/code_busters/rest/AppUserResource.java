@@ -38,12 +38,13 @@ public class AppUserResource {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN') or (!hasRole('ADMIN') and #id == principal.id)")
     @GetMapping("/{id}")
     public ResponseEntity<AppUserDTO> getAppUser(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(appUserService.get(id));
     }
 
-
+    @PreAuthorize("hasRole('ADMIN') or (!hasRole('ADMIN') and #id == principal.id)")
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateAppUser(@PathVariable(name = "id") final Long id,
             @RequestBody @Valid final AppUserDTO appUserDTO) {
