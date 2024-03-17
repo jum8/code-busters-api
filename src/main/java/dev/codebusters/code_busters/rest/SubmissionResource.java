@@ -1,23 +1,18 @@
 package dev.codebusters.code_busters.rest;
 
 import dev.codebusters.code_busters.model.SubmissionDTO;
+import dev.codebusters.code_busters.service.ChallengeService;
 import dev.codebusters.code_busters.service.SubmissionService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -25,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class SubmissionResource {
 
     private final SubmissionService submissionService;
+    private final ChallengeService challengeService;
 
-    public SubmissionResource(final SubmissionService submissionService) {
+    public SubmissionResource(final SubmissionService submissionService, ChallengeService challengeService) {
         this.submissionService = submissionService;
+        this.challengeService = challengeService;
     }
 
     @Hidden
@@ -44,6 +41,7 @@ public class SubmissionResource {
         return ResponseEntity.ok(submissionService.get(id));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'PREMIUM') or (hasRole('USER') and @challengeService.isChallengeNotPremium(#submissionDTO.getChallenge()))")
     @PostMapping
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Long> createSubmission(
