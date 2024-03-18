@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(value = "/countries", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CountryResource {
@@ -24,6 +23,7 @@ public class CountryResource {
         this.countryService = countryService;
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping
     public ResponseEntity<List<CountryDTO>> getAllCountries() {
         return ResponseEntity.ok(countryService.findAll());
