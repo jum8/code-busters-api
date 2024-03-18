@@ -24,5 +24,7 @@ public class HintUpdateDTO {
     @JsonView({ChallengeView.GetById.class})
     private String description;
 
-
+    @NotNull
+    @JsonView({ChallengeView.GetById.class})
+    private Integer order;
 }

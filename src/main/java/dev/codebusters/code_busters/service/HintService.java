@@ -36,6 +36,12 @@ public class HintService {
                 .orElseThrow(NotFoundException::new);
     }
 
+    public HintDTO getByChallengeIdAndOrder(final Long challengeId, final Integer order) {
+        return hintRepository.findByChallengeIdAndOrder(challengeId, order)
+                .map(hint -> mapToDTO(hint, new HintDTO()))
+                .orElseThrow(NotFoundException::new);
+    }
+
     public Long create(final HintDTO hintDTO) {
         final Hint hint = new Hint();
         mapToEntity(hintDTO, hint);
@@ -57,6 +63,7 @@ public class HintService {
         hintDTO.setId(hint.getId());
         hintDTO.setVisible(hint.getVisible());
         hintDTO.setDescription(hint.getDescription());
+        hintDTO.setOrder(hint.getOrder());
         hintDTO.setChallenge(hint.getChallenge() == null ? null : hint.getChallenge().getId());
         return hintDTO;
     }
@@ -64,6 +71,7 @@ public class HintService {
     private Hint mapToEntity(final HintDTO hintDTO, final Hint hint) {
         hint.setVisible(hintDTO.getVisible());
         hint.setDescription(hintDTO.getDescription());
+        hint.setOrder(hintDTO.getOrder()    );
         final Challenge challenge = hintDTO.getChallenge() == null ? null : challengeRepository.findById(hintDTO.getChallenge())
                 .orElseThrow(() -> new NotFoundException("challenge not found"));
         hint.setChallenge(challenge);

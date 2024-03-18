@@ -50,12 +50,14 @@ public class ChallengeResource {
         return ResponseEntity.ok(challenges);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'PREMIUM') or (hasRole('USER') and @challengeService.isChallengeNotPremium(#id))")
     @GetMapping("/{id}")
     @JsonView({ChallengeView.GetById.class})
     public ResponseEntity<ChallengeUpdateDTO> getChallenge(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(challengeService.get(id));
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/admin")
     @JsonView({ChallengeView.GetByIdAdmin.class})
     public ResponseEntity<ChallengeUpdateDTO> getChallengeAdmin(@PathVariable(name = "id") final Long id) {

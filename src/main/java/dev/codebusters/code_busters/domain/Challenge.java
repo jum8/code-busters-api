@@ -61,7 +61,7 @@ public class Challenge {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<Hint> hints;
 
 }

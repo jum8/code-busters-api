@@ -8,10 +8,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @SpringBootApplication
+@EnableScheduling
 public class CodeBustersApplication {
 
     public static void main(final String[] args) {
@@ -56,6 +58,25 @@ public class CodeBustersApplication {
                 adminUser.setUserType(userTypeAdmin);
                 userRepository.save(adminUser);
             }
+
+            UserType userTypePremium = userTypeRepository.findById(3L).orElseGet(() -> {
+                UserType newUserType = new UserType();
+                newUserType.setTitle("PREMIUM");
+                newUserType = userTypeRepository.save(newUserType);
+                return newUserType;
+            });
+
+            String premiumUserEmail = "max@mail.com";
+            if (!userRepository.existsByEmail(premiumUserEmail)) {
+                AppUser premiumUser = new AppUser();
+                premiumUser.setName("Max Power");
+                premiumUser.setEmail(premiumUserEmail);
+                premiumUser.setPassword(passwordEncoder.encode("password"));
+                premiumUser.setUserType(userTypePremium);
+                premiumUser.setPremium(true); // todo reemplazar toda la logica premium por userType y borrar campo
+                userRepository.save(premiumUser);
+            }
+
 
         };
     }

@@ -8,9 +8,13 @@ import dev.codebusters.code_busters.repos.AppUserRepository;
 import dev.codebusters.code_busters.repos.ChallengeRepository;
 import dev.codebusters.code_busters.repos.SubmissionRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
-import java.util.List;
+import dev.codebusters.code_busters.util.ResourceAlreadyExistsException;
+import dev.codebusters.code_busters.util.WrongAnswerException;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -36,12 +40,27 @@ public class SubmissionService {
     }
 
     public SubmissionDTO get(final Long id) {
+        System.out.println(challengeRepository.findFlagByChallengeId(1L));
         return submissionRepository.findById(id)
                 .map(submission -> mapToDTO(submission, new SubmissionDTO()))
                 .orElseThrow(NotFoundException::new);
     }
 
+    @Transactional
     public Long create(final SubmissionDTO submissionDTO) {
+        if (submissionRepository.existsByUserIdAndChallengeId(submissionDTO.getUser(), submissionDTO.getChallenge())) {
+            throw new ResourceAlreadyExistsException("Challenge already solved");
+        }
+
+        Challenge challenge = challengeRepository.findById(submissionDTO.getChallenge()).orElseThrow(NotFoundException::new);
+
+        if (!submissionDTO.getFlag().equals(challenge.getFlag())) {
+            throw new WrongAnswerException("Keep on trying!");
+        }
+
+        AppUser user = appUserRepository.findById(submissionDTO.getUser()).orElseThrow(NotFoundException::new);
+
+        user.setPoints(user.getPoints() + challenge.getPoints());
         final Submission submission = new Submission();
         mapToEntity(submissionDTO, submission);
         return submissionRepository.save(submission).getId();

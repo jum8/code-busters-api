@@ -89,6 +89,10 @@ public class ChallengeService {
         challengeRepository.deleteById(id);
     }
 
+    public Boolean isChallengeNotPremium(final Long id) {
+        return challengeRepository.existsByIdAndPremiumIsFalse(id);
+    }
+
     private ChallengeDTO mapToDTO(final Challenge challenge, final ChallengeDTO challengeDTO) {
         challengeDTO.setId(challenge.getId());
         challengeDTO.setAdded(challenge.getAdded());
@@ -212,7 +216,8 @@ public class ChallengeService {
         final Set<Hint> hints = challengeUpdateDTO.getHints().stream()
                 .map(hintUpdateDTO -> mapHintUpdateDTOToEntity(hintUpdateDTO, new Hint()))
                 .collect(Collectors.toSet());
-        challenge.setHints(hints);
+        challenge.getHints().clear();
+        challenge.getHints().addAll(hints);
         hints.forEach(hint -> hint.setChallenge(challenge));
         return challenge;
     }
@@ -220,6 +225,7 @@ public class ChallengeService {
     private Hint mapHintCreationDTOToEntity(final HintCreationDTO hintCreationDTO, final Hint hint) {
         hint.setVisible(hintCreationDTO.getVisible());
         hint.setDescription(hintCreationDTO.getDescription());
+        hint.setOrder(hintCreationDTO.getOrder());
         return hint;
     }
 
@@ -227,12 +233,14 @@ public class ChallengeService {
         hint.setId(hintUpdateDTO.getId());
         hint.setVisible(hintUpdateDTO.getVisible());
         hint.setDescription(hintUpdateDTO.getDescription());
+        hint.setOrder(hintUpdateDTO.getOrder());
         return hint;
     }
 
     private HintCreationDTO mapToHintCreationDTO(final Hint hint, final HintCreationDTO hintCreationDTO) {
         hintCreationDTO.setVisible(hint.getVisible());
         hintCreationDTO.setDescription(hint.getDescription());
+        hintCreationDTO.setOrder(hint.getOrder());
         return hintCreationDTO;
     }
 
@@ -240,6 +248,7 @@ public class ChallengeService {
         hintUpdateDTO.setId(hint.getId());
         hintUpdateDTO.setVisible(hint.getVisible());
         hintUpdateDTO.setDescription(hint.getDescription());
+        hintUpdateDTO.setOrder(hint.getOrder());
         return hintUpdateDTO;
     }
 
