@@ -10,6 +10,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +40,11 @@ public class ChallengeResource {
     public ResponseEntity<List<ChallengeSummaryDTO>> getExposedChallenges(
             @RequestParam(name = "categoryId", required = false) Long categoryId) {
         return ResponseEntity.ok(challengeService.findExposedChallengesByCategoryId(categoryId));
+    }
+
+    @GetMapping("/exposed/popular")
+    public ResponseEntity<List<ChallengeSummaryDTO>> getMostPopularExposedChallenges() {
+        return ResponseEntity.ok(challengeService.findMostPopularExposedChallenges());
     }
 
     @GetMapping("/search")

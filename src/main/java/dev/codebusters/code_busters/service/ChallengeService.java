@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +52,13 @@ public class ChallengeService {
     public List<ChallengeSummaryDTO> findExposedChallengesByCategoryId(Long categoryId) {
         final List<Challenge> challenges = challengeRepository.findExposedChallengesByCategoryId(categoryId);
         return challenges.stream()
+                .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
+                .toList();
+    }
+
+    @Transactional
+    public List<ChallengeSummaryDTO> findMostPopularExposedChallenges() {
+        return challengeRepository.findMostPopularExposedChallenges().stream()
                 .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
                 .toList();
     }

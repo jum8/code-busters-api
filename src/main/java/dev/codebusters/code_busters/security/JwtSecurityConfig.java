@@ -73,6 +73,7 @@ public class JwtSecurityConfig {
             "/swagger-ui/**",
             "v3/api-docs/**",
             "/challenges/exposed",
+            "/challenges/exposed/popular",
             "/categories/exposed"
     };
 }
