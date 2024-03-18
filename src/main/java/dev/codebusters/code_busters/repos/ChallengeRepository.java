@@ -3,6 +3,8 @@ package dev.codebusters.code_busters.repos;
 import dev.codebusters.code_busters.domain.Category;
 import dev.codebusters.code_busters.domain.Challenge;
 import dev.codebusters.code_busters.model.ChallengeLevel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +21,14 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
             + "(:categoryId IS NULL OR c.category.id = :categoryId) AND "
             + "c.exposed = true")
     List<Challenge> findExposedChallengesByCategoryId(@Param("categoryId") Long categoryId);
+
+    @Query("SELECT c FROM Challenge c " +
+            "JOIN Submission s ON c.id = s.challenge.id " +
+            "WHERE c.exposed = true " +
+            "GROUP BY c.id " +
+            "ORDER BY COUNT(*) DESC " +
+            "LIMIT 10")
+    List<Challenge> findMostPopularExposedChallenges();
 
     @Query("SELECT c FROM Challenge c WHERE "
             + "(:categoryId IS NULL OR c.category.id = :categoryId) AND "
