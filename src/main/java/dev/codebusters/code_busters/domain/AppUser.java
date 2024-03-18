@@ -1,14 +1,13 @@
 package dev.codebusters.code_busters.domain;
 
 import jakarta.persistence.*;
-
-import java.time.OffsetDateTime;
-import java.util.Set;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.OffsetDateTime;
+import java.util.Set;
 
 
 @Entity
@@ -39,6 +38,8 @@ public class AppUser {
     @Column(name = "passhash")
     private String password;
 
+    @Column(name = "tokenpasshash")
+    private String tokenpassword;
     @Column
     private Boolean enabled;
 

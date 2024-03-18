@@ -21,8 +21,6 @@ public class AppUserService {
     private final CountryRepository countryRepository;
     private final CityRepository cityRepository;
     private final UserTypeRepository userTypeRepository;
-
-    //private final EmailService emailService;
     private final SubmissionRepository submissionRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -50,65 +48,24 @@ public class AppUserService {
                 .orElseThrow(NotFoundException::new);
     }
 
+    public AppUserDTO get(final String email) {
+        return appUserRepository.findByEmail(email)
+                .map(appUser -> mapToDTO(appUser, new AppUserDTO()))
+                .orElseThrow(NotFoundException::new);
+    }
     public Long create(final UserRegistrationRequest userRegistrationRequest) {
         String email = userRegistrationRequest.getEmail();
         if (appUserRepository.existsByEmail(email)) {
             throw new ResourceAlreadyExistsException("Email " + email + " is already registered");
         }
 
+
         final AppUser appUser = new AppUser();
         mapUserRegistrationRequestToEntity(userRegistrationRequest, appUser);
         appUser.setPassword(passwordEncoder.encode(userRegistrationRequest.getPassword()));
-        /*emailService.sendEmail(user.getEmail(), "¡Bienvenido a Code Busters!", user.getName(), List.of(
-                "Gracias por registrarte",
-                "Te damos la bienvenida a la mejor plataforma para retos de Ciberseguridad",
-                "Esperamos que disfrutes de tu experiencia"
-        ));*/
         return appUserRepository.save(appUser).getId();
     }
 
-    /*public String generateResetCode(String email) {
-
-        Random random = new Random();
-        StringBuilder code = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
-            code.append(random.nextInt(10)); // Números aleatorios del 0 al 9
-        }
-        activeCodes.put(code.toString(), email);
-
-        Timer codeTimer = new Timer();
-
-        codeTimer.schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        activeCodes.remove(code.toString());
-                        codeTimer.cancel();
-                    }
-                }, 120000
-        );
-        return code.toString();
-
-
-    }
-
-    public void sendResetCode(String email) throws ResourceNotFoundException {
-        UserDTO user = findByEmail(email);
-        String code = generateResetCode(email);
-        emailService.sendEmail(email, "Recupera tu contraseña de Code Busters", user.getName(), List.of(
-                "Tu código de recuperación es: " + code
-        ));
-    }*/
-
-    /*public void resetPassword(String code, String newPassword) throws ResourceNotFoundException {
-        String email = activeCodes.get(code);
-        if (email == null ) throw new ResourceNotFoundException("Code " + code + " not found");
-        AppUser appUser = appUserRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User " + email + " not found"));
-        appUser.setPassword(passwordEncoder.encode(newPassword));
-        appUserRepository.save(appUser);
-        activeCodes.remove(code);
-
-    }*/
 
     public void update(final Long id, final AppUserDTO appUserDTO) {
         final AppUser appUser = appUserRepository.findById(id)

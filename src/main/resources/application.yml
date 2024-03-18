@@ -35,6 +35,20 @@ error:
     log-levels:
       5xx: ERROR
 
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: codebustersx@gmail.com
+  password: rxcy ryym gyvh takz
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+        ssl:
+          trust: smtp.gmail.com
+  urlFront: https://code-buster.vercel.app/recover/
 
 jwt:
   secret: ${JWT_SECRET:MI_SUPER_SECRETO_ULTRA_SEGURO_12345678901234567890_ULTRA_SEGURO_MI_SUPER_SECRETOULTRA_SEGURO_MI_SUPER_SECRETO_1234567890}
