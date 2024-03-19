@@ -27,8 +27,12 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
             "WHERE c.exposed = true " +
             "GROUP BY c.id " +
             "ORDER BY COUNT(*) DESC " +
-            "LIMIT 10")
-    List<Challenge> findMostPopularExposedChallenges();
+            "LIMIT :limit")
+    List<Challenge> findMostPopularExposedChallenges(@Param("limit") Integer limit);
+
+    default List<Challenge> findMostPopularExposedChallengesWithDefaultLimit(Integer limit) {
+        return findMostPopularExposedChallenges(limit == null ? 10 : limit);
+    }
 
     @Query("SELECT c FROM Challenge c WHERE "
             + "(:categoryId IS NULL OR c.category.id = :categoryId) AND "

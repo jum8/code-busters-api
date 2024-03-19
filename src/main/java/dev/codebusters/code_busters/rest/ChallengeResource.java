@@ -43,8 +43,10 @@ public class ChallengeResource {
     }
 
     @GetMapping("/exposed/popular")
-    public ResponseEntity<List<ChallengeSummaryDTO>> getMostPopularExposedChallenges() {
-        return ResponseEntity.ok(challengeService.findMostPopularExposedChallenges());
+    public ResponseEntity<List<ChallengeSummaryDTO>> getMostPopularExposedChallenges(
+            @RequestParam(name = "limit", required = false) Integer limit
+    ) {
+        return ResponseEntity.ok(challengeService.findMostPopularExposedChallenges(limit));
     }
 
     @GetMapping("/search")
