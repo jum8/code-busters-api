@@ -57,8 +57,8 @@ public class ChallengeService {
     }
 
     @Transactional
-    public List<ChallengeSummaryDTO> findMostPopularExposedChallenges() {
-        return challengeRepository.findMostPopularExposedChallenges().stream()
+    public List<ChallengeSummaryDTO> findMostPopularExposedChallenges(Integer limit) {
+        return challengeRepository.findMostPopularExposedChallengesWithDefaultLimit(limit).stream()
                 .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
                 .toList();
     }
