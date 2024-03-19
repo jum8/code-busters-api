@@ -31,7 +31,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
     List<Challenge> findMostPopularExposedChallenges(@Param("limit") Integer limit);
 
     default List<Challenge> findMostPopularExposedChallengesWithDefaultLimit(Integer limit) {
-        return findMostPopularExposedChallenges(limit == null ? 2 : limit);
+        return findMostPopularExposedChallenges(limit == null ? 10 : limit);
     }
 
     @Query("SELECT c FROM Challenge c WHERE "
