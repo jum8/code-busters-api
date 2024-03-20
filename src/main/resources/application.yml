@@ -27,6 +27,18 @@ spring:
   docker:
     compose:
       lifecycle-management: start-only
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_ADDRESS}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 error:
   handling:
     http-status-in-json-response: true

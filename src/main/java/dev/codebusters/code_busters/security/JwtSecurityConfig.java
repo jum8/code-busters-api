@@ -74,6 +74,7 @@ public class JwtSecurityConfig {
             "v3/api-docs/**",
             "/challenges/exposed",
             "/challenges/exposed/popular",
-            "/categories/exposed"
+            "/categories/exposed",
+            "/users/password/**"
     };
 }
