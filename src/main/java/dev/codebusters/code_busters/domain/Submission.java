@@ -30,7 +30,7 @@ public class Submission {
     private Challenge challenge;
 
     @CreatedDate
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private OffsetDateTime dateCreated;
 
 }
