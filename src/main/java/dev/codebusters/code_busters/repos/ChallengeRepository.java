@@ -25,20 +25,31 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
     @Query("SELECT c FROM Challenge c " +
             "JOIN Submission s ON c.id = s.challenge.id " +
+            "WHERE c.exposed = true " +
+            "GROUP BY c.id " +
+            "ORDER BY COUNT(*) DESC " +
+            "LIMIT :limit")
+    List<Challenge> findMostPopularExposedChallenges(@Param("limit") Integer limit);
+
+    default List<Challenge> findMostPopularExposedChallengesWithDefaultLimit(Integer limit) {
+        return findMostPopularExposedChallenges(limit == null ? 10 : limit);
+    }
+    @Query("SELECT c, COUNT(s) AS submissionCount FROM Challenge c " +
+            "JOIN Submission s ON c.id = s.challenge.id " +
             "WHERE c.exposed = true AND " +
             "(:dateFrom IS NULL OR s.dateCreated >= :dateFrom) AND " +
             "(:dateTo IS NULL OR s.dateCreated <= :dateTo) " +
             "GROUP BY c.id " +
             "ORDER BY COUNT(*) DESC " +
             "LIMIT :limit")
-    List<Challenge> findMostPopularExposedChallenges(@Param("limit") Integer limit,
+    List<Object[]> findMostPopularExposedChallengesBetweenDates(@Param("limit") Integer limit,
                                                      @Param("dateFrom") OffsetDateTime dateFrom,
                                                      @Param("dateTo") OffsetDateTime dateTo);
 
-    default List<Challenge> findMostPopularExposedChallengesWithDefaultLimit(Integer limit,
+    default List<Object[]> findMostPopularExposedChallengesBetweenDatesWithDefaultLimit(Integer limit,
                                                                              OffsetDateTime dateFrom,
                                                                              OffsetDateTime dateTo) {
-        return findMostPopularExposedChallenges(limit == null ? 10 : limit, dateFrom, dateTo);
+        return findMostPopularExposedChallengesBetweenDates(limit == null ? 10 : limit, dateFrom, dateTo);
     }
 
     @Query("SELECT c FROM Challenge c WHERE "
