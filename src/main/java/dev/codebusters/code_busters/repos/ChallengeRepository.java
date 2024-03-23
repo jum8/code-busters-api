@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -24,14 +25,20 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
     @Query("SELECT c FROM Challenge c " +
             "JOIN Submission s ON c.id = s.challenge.id " +
-            "WHERE c.exposed = true " +
+            "WHERE c.exposed = true AND " +
+            "(:dateFrom IS NULL OR s.dateCreated >= :dateFrom) AND " +
+            "(:dateTo IS NULL OR s.dateCreated <= :dateTo) " +
             "GROUP BY c.id " +
             "ORDER BY COUNT(*) DESC " +
             "LIMIT :limit")
-    List<Challenge> findMostPopularExposedChallenges(@Param("limit") Integer limit);
+    List<Challenge> findMostPopularExposedChallenges(@Param("limit") Integer limit,
+                                                     @Param("dateFrom") OffsetDateTime dateFrom,
+                                                     @Param("dateTo") OffsetDateTime dateTo);
 
-    default List<Challenge> findMostPopularExposedChallengesWithDefaultLimit(Integer limit) {
-        return findMostPopularExposedChallenges(limit == null ? 10 : limit);
+    default List<Challenge> findMostPopularExposedChallengesWithDefaultLimit(Integer limit,
+                                                                             OffsetDateTime dateFrom,
+                                                                             OffsetDateTime dateTo) {
+        return findMostPopularExposedChallenges(limit == null ? 10 : limit, dateFrom, dateTo);
     }
 
     @Query("SELECT c FROM Challenge c WHERE "

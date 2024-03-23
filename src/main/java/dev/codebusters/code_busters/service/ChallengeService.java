@@ -12,6 +12,10 @@ import dev.codebusters.code_busters.repos.SubmissionRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,7 +62,18 @@ public class ChallengeService {
 
     @Transactional
     public List<ChallengeSummaryDTO> findMostPopularExposedChallenges(Integer limit) {
-        return challengeRepository.findMostPopularExposedChallengesWithDefaultLimit(limit).stream()
+        return challengeRepository.findMostPopularExposedChallengesWithDefaultLimit(limit, null, null)
+                .stream()
+                .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
+                .toList();
+    }
+
+    @Transactional
+    public List<ChallengeSummaryDTO> findMostPopularExposedChallengesBetweenDates(Integer limit, LocalDate from, LocalDate to) {
+        OffsetDateTime dateFrom = from == null ? null : OffsetDateTime.of(from, LocalTime.MAX, ZoneOffset.UTC);
+        OffsetDateTime dateTo = to == null ? null : OffsetDateTime.of(to, LocalTime.MAX, ZoneOffset.UTC);
+        return challengeRepository.findMostPopularExposedChallengesWithDefaultLimit(limit, dateFrom, dateTo)
+                .stream()
                 .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
                 .toList();
     }
