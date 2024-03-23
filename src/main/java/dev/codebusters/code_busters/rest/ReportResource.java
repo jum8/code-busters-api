@@ -1,6 +1,7 @@
 package dev.codebusters.code_busters.rest;
 
 import dev.codebusters.code_busters.model.ChallengeSummaryDTO;
+import dev.codebusters.code_busters.model.ChallengeWithSubmissionCountDTO;
 import dev.codebusters.code_busters.service.ChallengeService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class ReportResource {
 
 
     @GetMapping("/popular-challenges")
-    public ResponseEntity<List<ChallengeSummaryDTO>> getMostPopularExposedChallengesBetweenDates(
+    public ResponseEntity<List<ChallengeWithSubmissionCountDTO>> getMostPopularExposedChallengesBetweenDates(
             @RequestParam(name = "limit", required = false) Integer limit,
             @RequestParam(name = "dateFrom", required = false) LocalDate dateFrom,
             @RequestParam(name = "dateTo", required = false) LocalDate dateTo
