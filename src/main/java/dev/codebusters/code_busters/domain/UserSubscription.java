@@ -25,7 +25,7 @@ public class UserSubscription {
     @Column(nullable = false, updatable = false)
     private LocalDate startDate;
 
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     private LocalDate expirationDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
