@@ -16,6 +16,8 @@ public class SubmissionDTO {
     private Long user;
     @NotNull
     private Long challenge;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull
     private String flag;
 

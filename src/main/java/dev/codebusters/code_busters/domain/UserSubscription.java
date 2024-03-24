@@ -3,12 +3,16 @@ package dev.codebusters.code_busters.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 
 @Entity
 @Table(name = "UserSubscriptions")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 public class UserSubscription {
@@ -21,7 +25,7 @@ public class UserSubscription {
     @Column(nullable = false, updatable = false)
     private LocalDate startDate;
 
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     private LocalDate expirationDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,5 +35,9 @@ public class UserSubscription {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscription_id", nullable = false)
     private Subscription subscription;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    private OffsetDateTime dateCreated;
 
 }

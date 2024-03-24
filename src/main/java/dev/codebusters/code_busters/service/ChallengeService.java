@@ -12,6 +12,10 @@ import dev.codebusters.code_busters.repos.SubmissionRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,8 +62,20 @@ public class ChallengeService {
 
     @Transactional
     public List<ChallengeSummaryDTO> findMostPopularExposedChallenges(Integer limit) {
-        return challengeRepository.findMostPopularExposedChallengesWithDefaultLimit(limit).stream()
+        return challengeRepository.findMostPopularExposedChallengesWithDefaultLimit(limit)
+                .stream()
                 .map(challenge -> mapToSummaryDTO(challenge, new ChallengeSummaryDTO()))
+                .toList();
+    }
+
+    @Transactional
+    public List<ChallengeWithSubmissionCountDTO> findMostPopularExposedChallengesBetweenDates(Integer limit, LocalDate from, LocalDate to) {
+        OffsetDateTime dateFrom = from == null ? null : OffsetDateTime.of(from, LocalTime.MAX, ZoneOffset.UTC);
+        OffsetDateTime dateTo = to == null ? null : OffsetDateTime.of(to, LocalTime.MAX, ZoneOffset.UTC);
+        return challengeRepository.findMostPopularExposedChallengesBetweenDatesWithDefaultLimit(limit, dateFrom, dateTo)
+                .stream()
+                .map(object -> mapToChallengeWithSubmissionCountDTO(
+                        (Challenge)object[0], (Long) object[1], new ChallengeWithSubmissionCountDTO()))
                 .toList();
     }
 
@@ -91,6 +107,14 @@ public class ChallengeService {
         final Challenge challenge = challengeRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
         mapChallegeUpdateDTOToEntity(challengeUpdateDTO, challenge);
+        challengeRepository.save(challenge);
+    }
+
+    @Transactional
+    public void updateExposition(final Long id, final Boolean exposed) {
+        final Challenge challenge = challengeRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
+        challenge.setExposed(exposed);
         challengeRepository.save(challenge);
     }
 
@@ -169,6 +193,22 @@ public class ChallengeService {
         challengeSummaryDTO.setPremium(challenge.getPremium());
         challengeSummaryDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getTitle());
         return challengeSummaryDTO;
+    }
+
+    private ChallengeWithSubmissionCountDTO mapToChallengeWithSubmissionCountDTO(
+            final Challenge challenge, final Long submissionCount,
+            final ChallengeWithSubmissionCountDTO challengeWithSubmissionCountDTO) {
+        challengeWithSubmissionCountDTO.setId(challenge.getId());
+        challengeWithSubmissionCountDTO.setTitle(challenge.getTitle());
+        challengeWithSubmissionCountDTO.setExposed(challenge.getExposed());
+        challengeWithSubmissionCountDTO.setPoints(challenge.getPoints());
+        challengeWithSubmissionCountDTO.setCredits(challenge.getCredits());
+        challengeWithSubmissionCountDTO.setLevel(challenge.getLevel());
+        challengeWithSubmissionCountDTO.setImageUrl(challenge.getImageUrl());
+        challengeWithSubmissionCountDTO.setPremium(challenge.getPremium());
+        challengeWithSubmissionCountDTO.setCategory(challenge.getCategory() == null ? null : challenge.getCategory().getTitle());
+        challengeWithSubmissionCountDTO.setSubmissionCount(submissionCount);
+        return challengeWithSubmissionCountDTO;
     }
 
     private Challenge mapToEntity(final ChallengeDTO challengeDTO, final Challenge challenge) {

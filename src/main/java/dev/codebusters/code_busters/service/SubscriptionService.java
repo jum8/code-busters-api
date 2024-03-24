@@ -3,10 +3,16 @@ package dev.codebusters.code_busters.service;
 import dev.codebusters.code_busters.domain.Subscription;
 import dev.codebusters.code_busters.domain.UserSubscription;
 import dev.codebusters.code_busters.model.SubscriptionDTO;
+import dev.codebusters.code_busters.model.SubscriptionWithCountDTO;
 import dev.codebusters.code_busters.repos.SubscriptionRepository;
 import dev.codebusters.code_busters.repos.UserSubscriptionRepository;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -28,6 +34,14 @@ public class SubscriptionService {
         final List<Subscription> subscriptions = subscriptionRepository.findAll(Sort.by("id"));
         return subscriptions.stream()
                 .map(subscription -> mapToDTO(subscription, new SubscriptionDTO()))
+                .toList();
+    }
+
+    public List<SubscriptionWithCountDTO> findSubscriptionCountBetweenDates(LocalDate from, LocalDate to) {
+        OffsetDateTime dateFrom = from == null ? null : OffsetDateTime.of(from, LocalTime.MAX, ZoneOffset.UTC);
+        OffsetDateTime dateTo = to == null ? null : OffsetDateTime.of(to, LocalTime.MAX, ZoneOffset.UTC);
+        return subscriptionRepository.findSubscriptionCountBetweenDates(dateFrom, dateTo).stream()
+                .map(object -> mapToDTO((Subscription) object[0], new SubscriptionWithCountDTO(), (Long) object[1]))
                 .toList();
     }
 
@@ -61,6 +75,16 @@ public class SubscriptionService {
         subscriptionDTO.setDurationInMonths(subscription.getDurationInMonths());
         subscriptionDTO.setPrice(subscription.getPrice());
         return subscriptionDTO;
+    }
+    private SubscriptionWithCountDTO mapToDTO(final Subscription subscription,
+                                              final SubscriptionWithCountDTO subscriptionWithCountDTO,
+                                              Long userSubscriptionCount) {
+        subscriptionWithCountDTO.setId(subscription.getId());
+        subscriptionWithCountDTO.setName(subscription.getName());
+        subscriptionWithCountDTO.setDurationInMonths(subscription.getDurationInMonths());
+        subscriptionWithCountDTO.setPrice(subscription.getPrice());
+        subscriptionWithCountDTO.setUserSubscriptionCount(userSubscriptionCount);
+        return subscriptionWithCountDTO;
     }
 
     private Subscription mapToEntity(final SubscriptionDTO subscriptionDTO,

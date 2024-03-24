@@ -67,6 +67,14 @@ public class CategoryResource {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("exposition/{id}")
+    public ResponseEntity<Long> updateCategoryExposition(@PathVariable(name = "id") final Long id,
+            @RequestBody final Boolean exposed) {
+        categoryService.updateExposition(id, exposed);
+        return ResponseEntity.ok(id);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
     public ResponseEntity<Void> deleteCategory(@PathVariable(name = "id") final Long id) {

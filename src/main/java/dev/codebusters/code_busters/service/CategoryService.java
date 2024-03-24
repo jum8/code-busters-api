@@ -58,6 +58,13 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
+    public void updateExposition(final Long id, final Boolean exposed) {
+        final Category category = categoryRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
+        category.setExposed(exposed);
+        categoryRepository.save(category);
+    }
+
     public void delete(final Long id) {
         categoryRepository.deleteById(id);
     }
