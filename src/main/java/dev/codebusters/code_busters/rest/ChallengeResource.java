@@ -92,6 +92,14 @@ public class ChallengeResource {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/exposition/{id}")
+    public ResponseEntity<Long> updateChallengeExposition(@PathVariable(name = "id") final Long id,
+            @RequestBody final Boolean exposed) {
+        challengeService.updateExposition(id, exposed);
+        return ResponseEntity.ok(id);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204")
     public ResponseEntity<Void> deleteChallenge(@PathVariable(name = "id") final Long id) {

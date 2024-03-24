@@ -110,6 +110,14 @@ public class ChallengeService {
         challengeRepository.save(challenge);
     }
 
+    @Transactional
+    public void updateExposition(final Long id, final Boolean exposed) {
+        final Challenge challenge = challengeRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
+        challenge.setExposed(exposed);
+        challengeRepository.save(challenge);
+    }
+
     public void delete(final Long id) {
         challengeRepository.deleteById(id);
     }
