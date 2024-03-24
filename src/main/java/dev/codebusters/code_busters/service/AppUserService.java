@@ -7,10 +7,12 @@ import dev.codebusters.code_busters.repos.*;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
 import dev.codebusters.code_busters.util.ResourceAlreadyExistsException;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -25,18 +27,20 @@ public class AppUserService {
     //private final EmailService emailService;
     private final SubmissionRepository submissionRepository;
     private final UserSubscriptionRepository userSubscriptionRepository;
+    private final SubscriptionRepository subscriptionRepository;
     private final PasswordEncoder passwordEncoder;
 
     public AppUserService(final AppUserRepository appUserRepository,
                           final CountryRepository countryRepository, final CityRepository cityRepository,
                           final UserTypeRepository userTypeRepository, final SubmissionRepository submissionRepository,
-                          final UserSubscriptionRepository userSubscriptionRepository, final PasswordEncoder passwordEncoder) {
+                          final UserSubscriptionRepository userSubscriptionRepository, SubscriptionRepository subscriptionRepository, final PasswordEncoder passwordEncoder) {
         this.appUserRepository = appUserRepository;
         this.countryRepository = countryRepository;
         this.cityRepository = cityRepository;
         this.userTypeRepository = userTypeRepository;
         this.submissionRepository = submissionRepository;
         this.userSubscriptionRepository = userSubscriptionRepository;
+        this.subscriptionRepository = subscriptionRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -53,6 +57,7 @@ public class AppUserService {
                 .orElseThrow(NotFoundException::new);
     }
 
+    @Transactional
     public Long create(final UserRegistrationRequest userRegistrationRequest) {
         String email = userRegistrationRequest.getEmail();
         if (appUserRepository.existsByEmail(email)) {
@@ -62,12 +67,23 @@ public class AppUserService {
         final AppUser appUser = new AppUser();
         mapUserRegistrationRequestToEntity(userRegistrationRequest, appUser);
         appUser.setPassword(passwordEncoder.encode(userRegistrationRequest.getPassword()));
+
+        AppUser savedAppUser = appUserRepository.save(appUser);
+
+        Subscription freeSubscription = subscriptionRepository.findByName("Free")
+                .orElseThrow(() -> new NotFoundException("Free subscription not found"));
+        UserSubscription userSubscription = new UserSubscription();
+        userSubscription.setUser(savedAppUser);
+        userSubscription.setSubscription(freeSubscription);
+        userSubscription.setStartDate(LocalDate.now());
+
+        userSubscriptionRepository.save(userSubscription);
         /*emailService.sendEmail(user.getEmail(), "¡Bienvenido a Code Busters!", user.getName(), List.of(
                 "Gracias por registrarte",
                 "Te damos la bienvenida a la mejor plataforma para retos de Ciberseguridad",
                 "Esperamos que disfrutes de tu experiencia"
         ));*/
-        return appUserRepository.save(appUser).getId();
+        return savedAppUser.getId();
     }
 
     /*public String generateResetCode(String email) {
