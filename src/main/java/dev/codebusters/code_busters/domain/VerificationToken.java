@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class PasswordResetToken {
+public class VerificationToken {
 
     private static final int EXPIRATION = 60 * 15;
 
@@ -29,7 +29,7 @@ public class PasswordResetToken {
     @JoinColumn(nullable = false, name = "user_id")
     private AppUser user;
 
-    public PasswordResetToken(String token, AppUser user) {
+    public VerificationToken(String token, AppUser user) {
         this.token = token;
         this.expiryDate = LocalDateTime.now().plusSeconds(EXPIRATION);
         this.user = user;

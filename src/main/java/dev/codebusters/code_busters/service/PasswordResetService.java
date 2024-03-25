@@ -1,9 +1,9 @@
 package dev.codebusters.code_busters.service;
 
 import dev.codebusters.code_busters.domain.AppUser;
-import dev.codebusters.code_busters.domain.PasswordResetToken;
+import dev.codebusters.code_busters.domain.VerificationToken;
 import dev.codebusters.code_busters.repos.AppUserRepository;
-import dev.codebusters.code_busters.repos.PasswordResetTokenRepository;
+import dev.codebusters.code_busters.repos.VerificationTokenRepository;
 import dev.codebusters.code_busters.util.InvalidTokenException;
 import dev.codebusters.code_busters.util.NotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,13 +14,13 @@ import java.util.UUID;
 
 @Service
 public class PasswordResetService {
-    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
     private final AppUserRepository appUserRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
-    public PasswordResetService(PasswordResetTokenRepository passwordResetTokenRepository, AppUserRepository appUserRepository, EmailService emailService, PasswordEncoder passwordEncoder) {
-        this.passwordResetTokenRepository = passwordResetTokenRepository;
+    public PasswordResetService(VerificationTokenRepository verificationTokenRepository, AppUserRepository appUserRepository, EmailService emailService, PasswordEncoder passwordEncoder) {
+        this.verificationTokenRepository = verificationTokenRepository;
         this.appUserRepository = appUserRepository;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
@@ -32,7 +32,7 @@ public class PasswordResetService {
         if (userOptional.isPresent()) {
             AppUser user = userOptional.get();
 
-            passwordResetTokenRepository.findByUser(user).ifPresent(passwordResetTokenRepository::delete);
+            verificationTokenRepository.findByUser(user).ifPresent(verificationTokenRepository::delete);
 
             String token = UUID.randomUUID().toString(); // todo verificar que no haya un token repetido en la base
 
@@ -46,21 +46,21 @@ public class PasswordResetService {
     }
 
     public Long updatePassword(String password, String token) {
-        Optional<PasswordResetToken> passwordResetToken = passwordResetTokenRepository.findByToken(token);
+        Optional<VerificationToken> passwordResetToken = verificationTokenRepository.findByToken(token);
         if (passwordResetToken.isEmpty() || passwordResetToken.get().isExpired()) {
            throw new InvalidTokenException("Invalid token");
         }
 
         AppUser user = appUserRepository.findById(passwordResetToken.get().getUser().getId())
                 .orElseThrow(NotFoundException::new);
-        passwordResetTokenRepository.delete(passwordResetToken.get());
+        verificationTokenRepository.delete(passwordResetToken.get());
 
         user.setPassword(passwordEncoder.encode(password));
         return appUserRepository.save(user).getId();
     }
 
     private void createPasswordResetTokenForUser(String token, AppUser user) {
-        PasswordResetToken myToken = new PasswordResetToken(token, user);
-        passwordResetTokenRepository.save(myToken);
+        VerificationToken myToken = new VerificationToken(token, user);
+        verificationTokenRepository.save(myToken);
     }
 }
