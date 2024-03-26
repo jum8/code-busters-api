@@ -25,6 +25,10 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Transactional
     @Override
     public JwtUserDetails loadUserByUsername(final String username) {
+        boolean accountNonExpired = true;
+        boolean credentialsNonExpired = true;
+        boolean accountNonLocked = true;
+
         final AppUser user = userRepository.findByEmail(username).orElseThrow(
                 () -> new UsernameNotFoundException("User " + username + " not found"));
         final String userType = user.getUserType().getTitle();
@@ -34,6 +38,7 @@ public class JwtUserDetailsService implements UserDetailsService {
                 .map(submission -> submission.getChallenge().getId()).toList();
         return new JwtUserDetails(user.getId(), user.getEmail(), user.getName(), user.getPremium(),
                 user.getPoints(), user.getProfileImage(), challengesSolved, userType,
-                username, user.getPassword(), roles);
+                username, user.getPassword(), user.getEnabled(), accountNonExpired, credentialsNonExpired,
+                accountNonLocked, roles);
     }
 }

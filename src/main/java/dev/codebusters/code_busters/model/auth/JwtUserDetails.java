@@ -22,8 +22,9 @@ public class JwtUserDetails extends User {
     public JwtUserDetails(final Long id, final String email, final String name, final Boolean premium,
                           final Long points, final Integer profileImage, final Collection<Long> challengesSolved,
                           final String userType, final String username, final String hash,
-                          final Collection<? extends GrantedAuthority> authorities) {
-        super(username, hash, authorities);
+                          final boolean enabled, final boolean accountNonExpired, final boolean credentialsNonExpired,
+                          final boolean accountNonLocked, final Collection<? extends GrantedAuthority> authorities) {
+        super(username, hash, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
         this.id = id;
         this.email = email;
         this.name = name;
