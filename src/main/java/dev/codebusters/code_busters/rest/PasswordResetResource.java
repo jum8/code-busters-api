@@ -24,14 +24,14 @@ public class PasswordResetResource {
 
     @PostMapping("/forgot/{email}")
     @ApiResponse(responseCode = "200")
-    public ResponseEntity<String> forgotPassword(HttpServletRequest request, @PathVariable final String email) {
+    public ResponseEntity<String> forgotPassword(@PathVariable final String email, HttpServletRequest request) {
         String contextPath = getAppUrl(request);
 
         String baseUrl = contextPath + "/users/password/reset?token=";
 
-        passwordResetService.forgotPassword(baseUrl, email);
+        passwordResetService.forgotPassword(email, baseUrl);
 
-        return new ResponseEntity<>("An email was sent", HttpStatus.OK);
+        return new ResponseEntity<>("An email was sent if the user exists", HttpStatus.OK);
     }
 
     @PostMapping("/reset")

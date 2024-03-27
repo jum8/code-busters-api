@@ -26,7 +26,7 @@ public class PasswordResetService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void forgotPassword(String baseUrl, String email) {
+    public void forgotPassword(String email, String baseUrl) {
         Optional<AppUser> userOptional = appUserRepository.findByEmail(email);
 
         if (userOptional.isPresent()) {

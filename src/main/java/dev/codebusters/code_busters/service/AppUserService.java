@@ -2,18 +2,24 @@ package dev.codebusters.code_busters.service;
 
 import dev.codebusters.code_busters.domain.*;
 import dev.codebusters.code_busters.model.AppUserDTO;
+import dev.codebusters.code_busters.model.OnRegistrationCompleteEvent;
 import dev.codebusters.code_busters.model.auth.UserRegistrationRequest;
 import dev.codebusters.code_busters.repos.*;
+import dev.codebusters.code_busters.util.InvalidTokenException;
 import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
 import dev.codebusters.code_busters.util.ResourceAlreadyExistsException;
 import jakarta.transaction.Transactional;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -29,11 +35,13 @@ public class AppUserService {
     private final UserSubscriptionRepository userSubscriptionRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final PasswordEncoder passwordEncoder;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final EmailService emailService;
 
     public AppUserService(final AppUserRepository appUserRepository,
                           final CountryRepository countryRepository, final CityRepository cityRepository,
                           final UserTypeRepository userTypeRepository, final SubmissionRepository submissionRepository,
-                          final UserSubscriptionRepository userSubscriptionRepository, SubscriptionRepository subscriptionRepository, final PasswordEncoder passwordEncoder) {
+                          final UserSubscriptionRepository userSubscriptionRepository, SubscriptionRepository subscriptionRepository, final PasswordEncoder passwordEncoder, VerificationTokenRepository verificationTokenRepository, EmailService emailService) {
         this.appUserRepository = appUserRepository;
         this.countryRepository = countryRepository;
         this.cityRepository = cityRepository;
@@ -42,6 +50,8 @@ public class AppUserService {
         this.userSubscriptionRepository = userSubscriptionRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.passwordEncoder = passwordEncoder;
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.emailService = emailService;
     }
 
     public List<AppUserDTO> findAll() {
@@ -58,7 +68,7 @@ public class AppUserService {
     }
 
     @Transactional
-    public Long create(final UserRegistrationRequest userRegistrationRequest) {
+    public AppUser create(final UserRegistrationRequest userRegistrationRequest) {
         String email = userRegistrationRequest.getEmail();
         if (appUserRepository.existsByEmail(email)) {
             throw new ResourceAlreadyExistsException("Email " + email + " is already registered");
@@ -83,7 +93,43 @@ public class AppUserService {
                 "Te damos la bienvenida a la mejor plataforma para retos de Ciberseguridad",
                 "Esperamos que disfrutes de tu experiencia"
         ));*/
-        return savedAppUser.getId();
+        return savedAppUser;
+    }
+
+    @Async
+    @EventListener
+    public void requestRegistrationConfirmation(OnRegistrationCompleteEvent event) {
+        AppUser user = event.getUser();
+        String token = UUID.randomUUID().toString();
+
+        verificationTokenRepository.findByUser(user).ifPresent(verificationTokenRepository::delete);
+
+        createVerificationTokenForUser(token, user);
+
+        String subject = "Registration confirmation";
+        String text = "Confirm email" + " \r\n" + event.getAppUrl() + "?token=" + token;
+
+        emailService.sendSimpleMessage(user.getEmail(), subject, text);
+
+    }
+
+    public Long confirmRegistration(String token) {
+        Optional<VerificationToken> passwordResetToken = verificationTokenRepository.findByToken(token);
+        if (passwordResetToken.isEmpty() || passwordResetToken.get().isExpired()) {
+            throw new InvalidTokenException("Invalid token");
+        }
+
+        AppUser user = appUserRepository.findById(passwordResetToken.get().getUser().getId())
+                .orElseThrow(NotFoundException::new);
+        verificationTokenRepository.delete(passwordResetToken.get());
+
+        user.setEnabled(true);
+        return appUserRepository.save(user).getId();
+    }
+
+    private void createVerificationTokenForUser(String token, AppUser user) {
+        VerificationToken myToken = new VerificationToken(token, user);
+        verificationTokenRepository.save(myToken);
     }
 
     /*public String generateResetCode(String email) {
