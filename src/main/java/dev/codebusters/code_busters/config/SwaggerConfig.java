@@ -13,7 +13,9 @@ import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springdoc.core.customizers.OperationCustomizer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +27,9 @@ public class SwaggerConfig {
     String schemeName = "bearerAuth";
     String bearerFormat = "JWT";
     String scheme = "bearer";
+    @Value("${server.servlet.context-path}")
+    String contextPath;
+
 
     @Bean
     public OpenAPI openApiSpec() {
@@ -32,6 +37,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Code Buster API")
                         .version("1.0"))
+                .addServersItem(new Server().url(contextPath))
                 .addSecurityItem(new SecurityRequirement().addList(schemeName))
                 .components(new Components()
                         .addSecuritySchemes(schemeName, new SecurityScheme()
