@@ -1,5 +1,6 @@
 package dev.codebusters.code_busters.rest;
 
+import dev.codebusters.code_busters.config.FrontendConfig;
 import dev.codebusters.code_busters.domain.AppUser;
 import dev.codebusters.code_busters.model.OnRegistrationCompleteEvent;
 import dev.codebusters.code_busters.model.auth.AuthenticationRequest;
@@ -29,27 +30,27 @@ public class AuthenticationResource {
     private final JwtTokenService jwtTokenService;
     private final AppUserService appUserService;
     private final ApplicationEventPublisher eventPublisher;
+    private final FrontendConfig frontendConfig;
 
-    public AuthenticationResource(JwtUserDetailsService jwtUserDetailsService, AuthenticationManager authenticationManager, JwtTokenService jwtTokenService, AppUserService appUserService, ApplicationEventPublisher eventPublisher) {
+    public AuthenticationResource(JwtUserDetailsService jwtUserDetailsService, AuthenticationManager authenticationManager, JwtTokenService jwtTokenService, AppUserService appUserService, ApplicationEventPublisher eventPublisher, FrontendConfig frontendConfig) {
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.authenticationManager = authenticationManager;
         this.jwtTokenService = jwtTokenService;
         this.appUserService = appUserService;
         this.eventPublisher = eventPublisher;
+        this.frontendConfig = frontendConfig;
     }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/register")
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<Long> createAppUser(@RequestBody @Valid final UserRegistrationRequest userRegistrationRequest,
-                                              HttpServletRequest request) {
-        String contextPath = getAppUrl(request);
-
-        String baseUrl = contextPath + "/auth/confirm-registration";
+    public ResponseEntity<Long> createAppUser(@RequestBody @Valid final UserRegistrationRequest userRegistrationRequest) {
+        String url = frontendConfig.getUrl();
+        String path = frontendConfig.getConfirmRegistrationPath();
 
         final AppUser savedUser = appUserService.create(userRegistrationRequest);
 
-        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(savedUser, baseUrl));
+        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(savedUser, url + path));
 
         return new ResponseEntity<>(savedUser.getId(), HttpStatus.CREATED);
     }
@@ -82,13 +83,5 @@ public class AuthenticationResource {
         authenticationResponse.setUserType(userDetails.getUserType());
         authenticationResponse.setAccessToken(jwtTokenService.generateToken(userDetails));
         return authenticationResponse;
-    }
-
-    private String getAppUrl(HttpServletRequest request) {
-        String scheme = request.getScheme();
-        String serverName = request.getServerName();
-        int serverPort = request.getServerPort();
-        String contextPath = request.getContextPath();
-        return scheme + "://" + serverName + ":" + serverPort + contextPath;
     }
 }

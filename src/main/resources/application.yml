@@ -3,6 +3,11 @@ server:
   servlet:
     context-path: /api
 
+frontend:
+  url: ${FRONTEND_URL:http://localhost:${server.port}${server.servlet.context-path}}
+  change-password-path: /auth/changePassword
+  confirm-registration-path: /auth/confirm-registration
+
 spring:
   datasource:
     url: ${JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/code-busters-db?serverTimezone=UTC}

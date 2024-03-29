@@ -24,12 +24,9 @@ public class PasswordResetResource {
 
     @PostMapping("/forgot/{email}")
     @ApiResponse(responseCode = "200")
-    public ResponseEntity<String> forgotPassword(@PathVariable final String email, HttpServletRequest request) {
-        String contextPath = getAppUrl(request);
+    public ResponseEntity<String> forgotPassword(@PathVariable final String email) {
 
-        String baseUrl = contextPath + "/users/password/reset?token=";
-
-        passwordResetService.forgotPassword(email, baseUrl);
+        passwordResetService.forgotPassword(email);
 
         return new ResponseEntity<>("An email was sent if the user exists", HttpStatus.OK);
     }
@@ -40,14 +37,4 @@ public class PasswordResetResource {
         Long id = passwordResetService.updatePassword(password, token);
         return ResponseEntity.ok(id);
     }
-
-    private String getAppUrl(HttpServletRequest request) {
-        String scheme = request.getScheme();
-        String serverName = request.getServerName();
-        int serverPort = request.getServerPort();
-        String contextPath = request.getContextPath();
-        return scheme + "://" + serverName + ":" + serverPort + contextPath;
-    }
-
-
 }
