@@ -1,5 +1,6 @@
 package dev.codebusters.code_busters.service;
 
+import dev.codebusters.code_busters.config.FrontendConfig;
 import dev.codebusters.code_busters.domain.AppUser;
 import dev.codebusters.code_busters.domain.VerificationToken;
 import dev.codebusters.code_busters.repos.AppUserRepository;
@@ -19,14 +20,17 @@ public class PasswordResetService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
-    public PasswordResetService(VerificationTokenRepository verificationTokenRepository, AppUserRepository appUserRepository, EmailService emailService, PasswordEncoder passwordEncoder) {
+    private final FrontendConfig frontendConfig;
+
+    public PasswordResetService(VerificationTokenRepository verificationTokenRepository, AppUserRepository appUserRepository, EmailService emailService, PasswordEncoder passwordEncoder, FrontendConfig frontendConfig) {
         this.verificationTokenRepository = verificationTokenRepository;
         this.appUserRepository = appUserRepository;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
+        this.frontendConfig = frontendConfig;
     }
 
-    public void forgotPassword(String baseUrl, String email) {
+    public void forgotPassword(String email) {
         Optional<AppUser> userOptional = appUserRepository.findByEmail(email);
 
         if (userOptional.isPresent()) {
@@ -39,7 +43,8 @@ public class PasswordResetService {
             createPasswordResetTokenForUser(token, user);
 
             String subject = "Reset password";
-            String text = "Reset Password" + " \r\n" + baseUrl + token;
+            String text = "Reset Password" + " \r\n" +
+                    frontendConfig.getUrl() + frontendConfig.getChangePasswordPath() + "?token=" + token;
 
             emailService.sendSimpleMessage(email, subject, text);
         }

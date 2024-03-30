@@ -3,6 +3,11 @@ server:
   servlet:
     context-path: /api
 
+frontend:
+  url: ${FRONTEND_URL:http://localhost:${server.port}${server.servlet.context-path}}
+  change-password-path: /auth/changePassword
+  confirm-registration-path: /auth/confirm-registration
+
 spring:
   datasource:
     url: ${JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/code-busters-db?serverTimezone=UTC}
@@ -51,11 +56,6 @@ error:
 jwt:
   secret: ${JWT_SECRET:MI_SUPER_SECRETO_ULTRA_SEGURO_12345678901234567890_ULTRA_SEGURO_MI_SUPER_SECRETOULTRA_SEGURO_MI_SUPER_SECRETO_1234567890}
 
-
-frontend:
-  url: ${FRONTEND_URL}
-
 springdoc:
   swagger-ui:
     tagsSorter: alpha
-

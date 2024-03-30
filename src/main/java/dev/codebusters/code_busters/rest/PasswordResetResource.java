@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users/password")
 public class PasswordResetResource {
 
-    @Value("${frontend.url}")
-    String baseUrl;
     private final PasswordResetService passwordResetService;
 
     public PasswordResetResource(AppUserService appUserService, PasswordResetService passwordResetService) {
@@ -27,15 +24,11 @@ public class PasswordResetResource {
 
     @PostMapping("/forgot/{email}")
     @ApiResponse(responseCode = "200")
-    public ResponseEntity<String> forgotPassword( @PathVariable final String email) {
+    public ResponseEntity<String> forgotPassword(@PathVariable final String email) {
 
+        passwordResetService.forgotPassword(email);
 
-        String path = "/auth/changePassword?token=";
-
-
-        passwordResetService.forgotPassword(baseUrl + path, email);
-
-        return new ResponseEntity<>("An email was sent", HttpStatus.OK);
+        return new ResponseEntity<>("An email was sent if the user exists", HttpStatus.OK);
     }
 
     @PostMapping("/reset")
@@ -44,14 +37,4 @@ public class PasswordResetResource {
         Long id = passwordResetService.updatePassword(password, token);
         return ResponseEntity.ok(id);
     }
-
-    private String getAppUrl(HttpServletRequest request) {
-        String scheme = request.getScheme();
-        String serverName = request.getServerName();
-        int serverPort = request.getServerPort();
-        String contextPath = request.getContextPath();
-        return scheme + "://" + serverName + ":" + serverPort + contextPath;
-    }
-
-
 }

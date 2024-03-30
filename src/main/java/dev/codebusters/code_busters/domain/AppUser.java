@@ -66,11 +66,11 @@ public class AppUser {
     @JoinColumn(name = "user_type_id")
     private UserType userType;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserSubscription> subscriptions;
 
     public AppUser() {
-        this.enabled = true;
+        this.enabled = false;
         this.premium = false;
         this.points = 0L;
     }
