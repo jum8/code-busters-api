@@ -51,5 +51,11 @@ error:
 jwt:
   secret: ${JWT_SECRET:MI_SUPER_SECRETO_ULTRA_SEGURO_12345678901234567890_ULTRA_SEGURO_MI_SUPER_SECRETOULTRA_SEGURO_MI_SUPER_SECRETO_1234567890}
 
+
 frontend:
   url: ${FRONTEND_URL}
+
+springdoc:
+  swagger-ui:
+    tagsSorter: alpha
+

@@ -17,7 +17,6 @@ import java.util.List;
 
 
 @RestController
-@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping(value = "/reports", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ReportResource {
 
@@ -29,21 +28,20 @@ public class ReportResource {
         this.subscriptionService = subscriptionService;
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/challenge-popularity")
     public ResponseEntity<List<ChallengeWithSubmissionCountDTO>> getMostPopularExposedChallengesBetweenDates(
             @RequestParam(name = "limit", required = false) Integer limit,
             @RequestParam(name = "dateFrom", required = false) LocalDate dateFrom,
-            @RequestParam(name = "dateTo", required = false) LocalDate dateTo
-    )
+            @RequestParam(name = "dateTo", required = false) LocalDate dateTo)
     {
         return ResponseEntity.ok(challengeService.findMostPopularExposedChallengesBetweenDates(limit, dateFrom, dateTo));
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/subscription-popularity")
     public ResponseEntity<List<SubscriptionWithCountDTO>> getSubscriptionCountBetweenDates(
             @RequestParam(name = "dateFrom", required = false) LocalDate dateFrom,
-            @RequestParam(name = "dateTo", required = false) LocalDate dateTo
-    )
+            @RequestParam(name = "dateTo", required = false) LocalDate dateTo)
     {
         return ResponseEntity.ok(subscriptionService.findSubscriptionCountBetweenDates(dateFrom, dateTo));
     }
