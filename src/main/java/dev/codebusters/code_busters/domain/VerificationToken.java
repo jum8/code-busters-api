@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 public class VerificationToken {
 
-    private static final int EXPIRATION = 60 * 15;
+    private static final int EXPIRATION = 24 * 60;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class VerificationToken {
 
     public VerificationToken(String token, AppUser user) {
         this.token = token;
-        this.expiryDate = LocalDateTime.now().plusSeconds(EXPIRATION);
+        this.expiryDate = LocalDateTime.now().plusMinutes(EXPIRATION);
         this.user = user;
     }
 
