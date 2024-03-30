@@ -27,6 +27,18 @@ spring:
   docker:
     compose:
       lifecycle-management: start-only
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_ADDRESS}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 error:
   handling:
     http-status-in-json-response: true
@@ -39,6 +51,11 @@ error:
 jwt:
   secret: ${JWT_SECRET:MI_SUPER_SECRETO_ULTRA_SEGURO_12345678901234567890_ULTRA_SEGURO_MI_SUPER_SECRETOULTRA_SEGURO_MI_SUPER_SECRETO_1234567890}
 
+
+frontend:
+  url: ${FRONTEND_URL}
+
 springdoc:
   swagger-ui:
     tagsSorter: alpha
+

@@ -75,4 +75,6 @@ public class AppUser {
         this.points = 0L;
     }
 
+    public void setVerificationToken(String token) {
+    }
 }
