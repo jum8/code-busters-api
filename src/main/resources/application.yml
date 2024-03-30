@@ -6,7 +6,7 @@ server:
 frontend:
   url: ${FRONTEND_URL:http://localhost:${server.port}${server.servlet.context-path}}
   change-password-path: /auth/changePassword
-  confirm-registration-path: /auth/confirm-registration
+  confirm-registration-path: /auth/confirmRegistration
 
 spring:
   datasource:
