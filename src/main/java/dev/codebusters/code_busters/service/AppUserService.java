@@ -8,23 +8,27 @@ import dev.codebusters.code_busters.util.NotFoundException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
 import dev.codebusters.code_busters.util.ResourceAlreadyExistsException;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
 public class AppUserService {
 
+    @Value("${frontend.url}")
+    String baseUrl;
     private final AppUserRepository appUserRepository;
     private final CountryRepository countryRepository;
     private final CityRepository cityRepository;
     private final UserTypeRepository userTypeRepository;
 
-    //private final EmailService emailService;
+    private final EmailService emailService;
     private final SubmissionRepository submissionRepository;
     private final UserSubscriptionRepository userSubscriptionRepository;
     private final SubscriptionRepository subscriptionRepository;
@@ -32,12 +36,13 @@ public class AppUserService {
 
     public AppUserService(final AppUserRepository appUserRepository,
                           final CountryRepository countryRepository, final CityRepository cityRepository,
-                          final UserTypeRepository userTypeRepository, final SubmissionRepository submissionRepository,
+                          final UserTypeRepository userTypeRepository, EmailService emailService, final SubmissionRepository submissionRepository,
                           final UserSubscriptionRepository userSubscriptionRepository, SubscriptionRepository subscriptionRepository, final PasswordEncoder passwordEncoder) {
         this.appUserRepository = appUserRepository;
         this.countryRepository = countryRepository;
         this.cityRepository = cityRepository;
         this.userTypeRepository = userTypeRepository;
+        this.emailService = emailService;
         this.submissionRepository = submissionRepository;
         this.userSubscriptionRepository = userSubscriptionRepository;
         this.subscriptionRepository = subscriptionRepository;
@@ -68,7 +73,17 @@ public class AppUserService {
         mapUserRegistrationRequestToEntity(userRegistrationRequest, appUser);
         appUser.setPassword(passwordEncoder.encode(userRegistrationRequest.getPassword()));
 
+        // Generar y guardar el token único para el usuario
+        String token = UUID.randomUUID().toString();
+        appUser.setVerificationToken(token);
+
         AppUser savedAppUser = appUserRepository.save(appUser);
+
+        // Envío de correo electrónico de verificación
+        String path = "/auth/registrationConfirmation?token=";
+        String subject = "Verifique su correo";
+        String text = "Verifique su correo" + " \r\n" + baseUrl + path + token;
+        emailService.sendSimpleMessage(email, subject, text);
 
         Subscription freeSubscription = subscriptionRepository.findByName("Free")
                 .orElseThrow(() -> new NotFoundException("Free subscription not found"));
@@ -78,56 +93,10 @@ public class AppUserService {
         userSubscription.setStartDate(LocalDate.now());
 
         userSubscriptionRepository.save(userSubscription);
-        /*emailService.sendEmail(user.getEmail(), "¡Bienvenido a Code Busters!", user.getName(), List.of(
-                "Gracias por registrarte",
-                "Te damos la bienvenida a la mejor plataforma para retos de Ciberseguridad",
-                "Esperamos que disfrutes de tu experiencia"
-        ));*/
+
         return savedAppUser.getId();
     }
 
-    /*public String generateResetCode(String email) {
-
-        Random random = new Random();
-        StringBuilder code = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
-            code.append(random.nextInt(10)); // Números aleatorios del 0 al 9
-        }
-        activeCodes.put(code.toString(), email);
-
-        Timer codeTimer = new Timer();
-
-        codeTimer.schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        activeCodes.remove(code.toString());
-                        codeTimer.cancel();
-                    }
-                }, 120000
-        );
-        return code.toString();
-
-
-    }
-
-    public void sendResetCode(String email) throws ResourceNotFoundException {
-        UserDTO user = findByEmail(email);
-        String code = generateResetCode(email);
-        emailService.sendEmail(email, "Recupera tu contraseña de Code Busters", user.getName(), List.of(
-                "Tu código de recuperación es: " + code
-        ));
-    }*/
-
-    /*public void resetPassword(String code, String newPassword) throws ResourceNotFoundException {
-        String email = activeCodes.get(code);
-        if (email == null ) throw new ResourceNotFoundException("Code " + code + " not found");
-        AppUser appUser = appUserRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User " + email + " not found"));
-        appUser.setPassword(passwordEncoder.encode(newPassword));
-        appUserRepository.save(appUser);
-        activeCodes.remove(code);
-
-    }*/
 
     public void update(final Long id, final AppUserDTO appUserDTO) {
         final AppUser appUser = appUserRepository.findById(id)
