@@ -42,9 +42,16 @@ public class PasswordResetService {
 
             createPasswordResetTokenForUser(token, user);
 
-            String subject = "Reset password";
-            String text = "Reset Password" + " \r\n" +
-                    frontendConfig.getUrl() + frontendConfig.getChangePasswordPath() + "?token=" + token;
+            String subject = "Resetear contraseña - Code Buster";
+            String text = "Estimado/a Usuario/a,\n\n" +
+                    "Recibimos una solicitud para restablecer la contraseña de tu cuenta en Code Buster.\n" +
+                    "Para completar este proceso, sigue las instrucciones detalladas a continuación:\n\n" +
+                    "\t-\tHaz clic en el siguiente enlace para iniciar el proceso de reseteo de contraseña:\n\n" +
+                    frontendConfig.getUrl() + frontendConfig.getChangePasswordPath() + "?token=" + token + "\n\n" +
+                    "\t-\tSigue las instrucciones en pantalla para elegir una nueva contraseña segura para tu cuenta.\n\n" +
+                    "Si no has solicitado un reseteo de contraseña, por favor ignora este mensaje.\n\n" +
+                    "Atentamente,\n" +
+                    "El equipo de Code Buster";
 
             emailService.sendSimpleMessage(email, subject, text);
         }
