@@ -111,7 +111,7 @@ public class AppUserService {
         createVerificationTokenForUser(token, user);
 
         String subject = "Confirmación Code Buster";
-        String text = "Estimado/a Usuario/a,\n\n" +
+        String text = "Estimado/a " + user.getName() +",\n\n" +
                 "Gracias por confiar en Code Buster para adentrarte en este apasionado mundo de la ciberseguridad\n\n" +
                 "Por favor, haz clic en el siguiente enlace para confirmar tu dirección de correo electrónico:\n\n" +
                 event.getAppUrl() + "?token=" + token + "\n\n" +
