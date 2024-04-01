@@ -43,7 +43,7 @@ public class PasswordResetService {
             createPasswordResetTokenForUser(token, user);
 
             String subject = "Resetear contraseña - Code Buster";
-            String text = "Estimado/a Usuario/a,\n\n" +
+            String text = "Estimado/a " + user.getName() +",\n\n" +
                     "Recibimos una solicitud para restablecer la contraseña de tu cuenta en Code Buster.\n" +
                     "Para completar este proceso, sigue las instrucciones detalladas a continuación:\n\n" +
                     "\t-\tHaz clic en el siguiente enlace para iniciar el proceso de reseteo de contraseña:\n\n" +
