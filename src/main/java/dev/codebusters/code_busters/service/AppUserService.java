@@ -110,8 +110,14 @@ public class AppUserService {
 
         createVerificationTokenForUser(token, user);
 
-        String subject = "Registration confirmation";
-        String text = "Confirm email" + " \r\n" + event.getAppUrl() + "?token=" + token;
+        String subject = "Confirmación Code Buster";
+        String text = "Estimado/a Usuario/a,\n\n" +
+                "Gracias por confiar en Code Buster para adentrarte en este apasionado mundo de la ciberseguridad\n\n" +
+                "Por favor, haz clic en el siguiente enlace para confirmar tu dirección de correo electrónico:\n\n" +
+                event.getAppUrl() + "?token=" + token + "\n\n" +
+                "¡Gracias por ser parte de nuestra comunidad!\n\n" +
+                "Atentamente,\n" +
+                "El equipo de Code Buster";
 
         emailService.sendSimpleMessage(user.getEmail(), subject, text);
 
