@@ -75,6 +75,7 @@ public class JwtSecurityConfig {
             "/challenges/exposed",
             "/challenges/exposed/popular",
             "/categories/exposed",
-            "/users/password/**"
+            "/users/password/**",
+            "/users/ranking/**"
     };
 }
