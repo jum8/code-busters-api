@@ -3,6 +3,7 @@ package dev.codebusters.code_busters.service;
 import dev.codebusters.code_busters.domain.*;
 import dev.codebusters.code_busters.model.AppUserDTO;
 import dev.codebusters.code_busters.model.OnRegistrationCompleteEvent;
+import dev.codebusters.code_busters.model.UserRankingDTO;
 import dev.codebusters.code_busters.model.auth.UserRegistrationRequest;
 import dev.codebusters.code_busters.repos.*;
 import dev.codebusters.code_busters.util.InvalidTokenException;
@@ -57,6 +58,14 @@ public class AppUserService {
         final List<AppUser> appUsers = appUserRepository.findAll(Sort.by("id"));
         return appUsers.stream()
                 .map(appUser -> mapToDTO(appUser, new AppUserDTO()))
+                .toList();
+    }
+
+    @Transactional
+    public List<UserRankingDTO> findAllSortedByPoints() {
+        final List<AppUser> appUsers = appUserRepository.findAll(Sort.by("points").descending());
+        return appUsers.stream()
+                .map(appUser -> mapToDTO(appUser, new UserRankingDTO()))
                 .toList();
     }
 
@@ -155,6 +164,12 @@ public class AppUserService {
         appUserDTO.setCity(appUser.getCity() == null ? null : appUser.getCity().getId());
         appUserDTO.setUserType(appUser.getUserType() == null ? null : appUser.getUserType().getId());
         return appUserDTO;
+    }
+    private UserRankingDTO mapToDTO(final AppUser appUser, final UserRankingDTO userRankingDTO) {
+        userRankingDTO.setName(appUser.getName());
+        userRankingDTO.setPoints(appUser.getPoints());
+        userRankingDTO.setCountry(appUser.getCountry() == null ? null : appUser.getCountry().getCountryName());
+        return userRankingDTO;
     }
 
     private AppUser mapToEntity(final AppUserDTO appUserDTO, final AppUser appUser) {

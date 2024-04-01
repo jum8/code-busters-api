@@ -1,6 +1,7 @@
 package dev.codebusters.code_busters.rest;
 
 import dev.codebusters.code_busters.model.AppUserDTO;
+import dev.codebusters.code_busters.model.UserRankingDTO;
 import dev.codebusters.code_busters.service.AppUserService;
 import dev.codebusters.code_busters.util.ReferencedException;
 import dev.codebusters.code_busters.util.ReferencedWarning;
@@ -35,6 +36,11 @@ public class AppUserResource {
     @GetMapping
     public ResponseEntity<List<AppUserDTO>> getAllAppUsers() {
         return ResponseEntity.ok(appUserService.findAll());
+    }
+
+    @GetMapping("ranking")
+    public ResponseEntity<List<UserRankingDTO>> getAllAppUsersSortedByPoints() {
+        return ResponseEntity.ok(appUserService.findAllSortedByPoints());
     }
 
 
