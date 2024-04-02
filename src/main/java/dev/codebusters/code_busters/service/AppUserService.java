@@ -62,8 +62,8 @@ public class AppUserService {
     }
 
     @Transactional
-    public List<UserRankingDTO> findAllSortedByPoints() {
-        final List<AppUser> appUsers = appUserRepository.findAll(Sort.by("points").descending());
+    public List<UserRankingDTO> findAllSortedByPoints(Integer limit) {
+        final List<AppUser> appUsers = appUserRepository.findAllUsersSortedByPointsWithDefaultLimit(limit);
         return appUsers.stream()
                 .map(appUser -> mapToDTO(appUser, new UserRankingDTO()))
                 .toList();
