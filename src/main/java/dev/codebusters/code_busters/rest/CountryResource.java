@@ -28,4 +28,9 @@ public class CountryResource {
     public ResponseEntity<List<CountryDTO>> getAllCountries() {
         return ResponseEntity.ok(countryService.findAll());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CountryDTO> getCountry(@PathVariable(name = "id") final Long id) {
+        return ResponseEntity.ok(countryService.get(id));
+    }
 }

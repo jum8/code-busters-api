@@ -29,6 +29,12 @@ public class CountryService {
                 .toList();
     }
 
+    public CountryDTO get(final Long id) {
+        return countryRepository.findById(id)
+                .map(country -> mapToDTO(country, new CountryDTO()))
+                .orElseThrow(NotFoundException::new);
+    }
+
 
     private CountryDTO mapToDTO(final Country country, final CountryDTO countryDTO) {
         countryDTO.setId(country.getId());
