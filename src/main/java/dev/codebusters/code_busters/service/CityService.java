@@ -3,6 +3,7 @@ package dev.codebusters.code_busters.service;
 import dev.codebusters.code_busters.domain.City;
 import dev.codebusters.code_busters.model.CityDTO;
 import dev.codebusters.code_busters.repos.CityRepository;
+import dev.codebusters.code_busters.util.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,12 @@ public class CityService {
         return cities.stream()
                 .map(city -> mapToDTO(city, new CityDTO()))
                 .toList();
+    }
+
+    public CityDTO get(final Long id) {
+        return cityRepository.findById(id)
+                .map(city -> mapToDTO(city, new CityDTO()))
+                .orElseThrow(NotFoundException::new);
     }
 
 

@@ -28,5 +28,10 @@ public class CityResource {
         return ResponseEntity.ok(cityService.findByCountryId(countryId));
     }
 
+    @GetMapping("byId/{id}")
+    public ResponseEntity<CityDTO> getCity(@PathVariable(name = "id") final Long id) {
+        return ResponseEntity.ok(cityService.get(id));
+    }
+
 
 }
